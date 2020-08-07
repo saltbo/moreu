@@ -7,16 +7,18 @@ import (
 )
 
 type Roles struct {
-	Loader   string                `yaml:"loader"`
+	Loader string `yaml:"loader"`
 	//Upstream client.UpstreamConfig `yaml:"upstream"`
 }
 
+type Upstream struct {
+	Address string            `yaml:"address"`
+	Headers map[string]string `yaml:"headers"`
+}
+
 type Router struct {
-	Pattern  string `yaml:"pattern"`
-	Upstream struct {
-		Address string            `yaml:"address"`
-		Headers map[string]string `yaml:"headers"`
-	} `yaml:"upstream"`
+	Pattern  string   `yaml:"pattern"`
+	Upstream Upstream `yaml:"upstream"`
 }
 
 type Config struct {

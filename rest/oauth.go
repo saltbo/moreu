@@ -2,6 +2,7 @@ package rest
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 
@@ -21,9 +22,14 @@ type Oauth struct {
 	roleLoader RoleLoader
 }
 
-func NewOauth(oauth2 *oauth2.Oauth2, jwtRole *rolec.JWTRole) *Oauth {
+func NewOauth(conf oauth2.Config, jwtRole *rolec.JWTRole) *Oauth {
+	o2, err := oauth2.New(conf)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
 	return &Oauth{
-		oauth2:  oauth2,
+		oauth2:  o2,
 		jwtRole: jwtRole,
 		roleLoader: func(uid string) ([]string, error) {
 			return []string{"admin"}, nil

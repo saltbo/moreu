@@ -23,8 +23,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/storyicon/grbac"
 
-	"github.com/saltbo/authcar/pkg/config"
-	"github.com/saltbo/authcar/pkg/oauth2"
+	"github.com/saltbo/authcar/config"
 	"github.com/saltbo/authcar/pkg/rolec"
 	"github.com/saltbo/authcar/rest"
 )
@@ -40,39 +39,7 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		conf, err := config.Parse()
-		if err != nil {
-			log.Fatalf("conf: %v", err)
-		}
-
-		o2, err := oauth2.New(conf.Oauth2)
-		if err != nil {
-			log.Fatalln(err)
-		}
-
-		roleLoader := grbac.WithYAML(conf.Roles.Loader, time.Second)
-		jwtRole, err := rolec.NewJWTRole(conf.Secret, roleLoader)
-		if err != nil {
-			log.Fatalln(err)
-		}
-
-		rs, err := ginutil.NewServer(":8080")
-		if err != nil {
-			log.Fatalln(err)
-			return
-		}
-
-		oauthRouter := rest.NewOauth(o2, jwtRole)
-		oauthRouter.SetupRoleLoader(func(uid string) ([]string, error) {
-			// 查询用户角色
-			return nil, nil
-		})
-
-		rs.SetupResource("/oauth",
-			oauthRouter,
-			rest.NewReverseProxy(jwtRole),
-		)
-		rs.Run()
+		serverRun()
 	},
 }
 
@@ -88,4 +55,44 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// serverCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+}
+
+func serverRun() {
+	conf, err := config.Parse()
+	if err != nil {
+		log.Fatalf("conf: %v", err)
+	}
+
+	roleLoader := grbac.WithYAML(conf.Roles.Loader, time.Second)
+	jwtRole, err := rolec.NewJWTRole(conf.Secret, roleLoader)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	// define and start server
+	rs := ginutil.NewServer(":8080")
+	oauthRouter := rest.NewOauth(conf.Oauth2, jwtRole)
+	oauthRouter.SetupRoleLoader(roleLoaderInit())
+	rs.SetupRS("/oauth", oauthRouter)
+	for _, router := range conf.Routers {
+		rs.SetupRS(router.Pattern, rest.NewReverseProxy(router.Upstream, jwtRole))
+	}
+
+	// serve the static files
+	if conf.Root != "" {
+		rs.SetupStatic("/", conf.Root)
+		rs.SetupIndex(conf.Root)
+	}
+
+	// server run
+	if err := rs.Run(); err != nil {
+		log.Fatalln(err)
+	}
+}
+
+func roleLoaderInit() rest.RoleLoader {
+	return func(uid string) ([]string, error) {
+		// 查询用户角色
+		return nil, nil
+	}
 }

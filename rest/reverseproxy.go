@@ -11,37 +11,35 @@ import (
 	"github.com/saltbo/gopkg/ginutil"
 	"github.com/saltbo/gopkg/httputil"
 
-	"github.com/saltbo/authcar/pkg/config"
+	"github.com/saltbo/authcar/config"
 	"github.com/saltbo/authcar/pkg/rolec"
 )
 
 type ReverseProxy struct {
-	routers []config.Router
-	jwtRole *rolec.JWTRole
+	upstream config.Upstream
+	jwtRole  *rolec.JWTRole
 }
 
-func NewReverseProxy(jwtRole *rolec.JWTRole) *ReverseProxy {
+func NewReverseProxy(upstream config.Upstream, jwtRole *rolec.JWTRole) *ReverseProxy {
 	return &ReverseProxy{
-		jwtRole:jwtRole,
-
+		upstream: upstream,
+		jwtRole:  jwtRole,
 	}
 }
 
 func (rp *ReverseProxy) Register(router *gin.RouterGroup) {
-	for _, r := range rp.routers {
-		u, err := url.Parse(r.Upstream.Address)
-		if err != nil {
-			log.Fatalf("[upstream] invalid address: %s", err)
-		}
-
-		header := http.Header{}
-		for k, v := range r.Upstream.Headers {
-			header.Set(k, v)
-		}
-
-		upstream := httputil.NewReverseProxy(u, header)
-		router.Any(r.Pattern, rp.createReverseProxy(upstream))
+	u, err := url.Parse(rp.upstream.Address)
+	if err != nil {
+		log.Fatalf("[upstream] invalid address: %s", err)
 	}
+
+	header := http.Header{}
+	for k, v := range rp.upstream.Headers {
+		header.Set(k, v)
+	}
+
+	upstream := httputil.NewReverseProxy(u, header)
+	router.Any("/*action", rp.createReverseProxy(upstream))
 }
 
 func (rp *ReverseProxy) createReverseProxy(upstream *httputil.ReverseProxy) gin.HandlerFunc {
