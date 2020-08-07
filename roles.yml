@@ -1,0 +1,42 @@
+# 允许所有的匿名读
+- id: 0
+  host: '*'
+  path: '**'
+  method: '{GET}'
+  authorized_roles:
+    - '*'
+  forbidden_roles:
+    - black_user
+  allow_anyone: false
+
+# 只有管理员和成员才能执行新增和修改操作
+- id: 1
+  host: '*'
+  path: '**'
+  method: '{POST,PUT}'
+  authorized_roles:
+    - admin
+    - member
+  forbidden_roles:
+    - black_user
+  allow_anyone: false
+
+# 只有管理员拥有删除权限
+- id: 2
+  host: '*'
+  path: '**'
+  method: '{DELETE}'
+  authorized_roles:
+    - admin
+  forbidden_roles:
+  allow_anyone: false
+
+# 只有管理员可以新增和删除应用
+- id: 3
+  host: '*'
+  path: '/api/apps'
+  method: '{POST,PUT}'
+  authorized_roles:
+    - admin
+  forbidden_roles:
+  allow_anyone: false

@@ -1,0 +1,27 @@
+root: ../example/dist
+secret: 1111
+
+oauth2:
+  auth_url: https://sso.example.com/oauth/authorize
+  token_url: https://sso.example.com/oauth/token
+  user_url: https://sso.example.com/oauth/user
+  client_id: ljfd129dxxxxxxxxxxxxxxxx15ef1b2b
+  client_secret: tCZdjxxxxxxxxxxxxxxqEP
+  scope: userinfo
+
+roles:
+  loader: ./roles.yml
+  upstream:
+    address: http://localhost:9312/api/member-roles
+    headers:
+      Authorization: f1h6lVxxxxxxxxxxxxxxxxxxkIo3
+
+routers:
+  - pattern: /api/*action
+    upstream:
+      address: http://localhost:9312
+      headers:
+        Authorization: f1h6lVxxxxxxxxxxxxxxxxxxxxxXJkIo3
+  - pattern: /apiv2/otherservice/*action
+    upstream:
+      address: http://localhost:8081
