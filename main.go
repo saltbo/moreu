@@ -16,8 +16,8 @@ limitations under the License.
 package main
 
 import (
-	"github.com/saltbo/goubase/cmd"
-	_ "github.com/saltbo/goubase/docs"
+	"github.com/saltbo/moreu/cmd"
+	_ "github.com/saltbo/moreu/docs"
 )
 
 // @title Swagger Example API

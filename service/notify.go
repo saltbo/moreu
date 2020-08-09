@@ -3,7 +3,7 @@ package service
 import (
 	"fmt"
 
-	"github.com/saltbo/goubase/pkg/mail"
+	"github.com/saltbo/moreu/pkg/mail"
 )
 
 var defaultNotify = NewNotify()

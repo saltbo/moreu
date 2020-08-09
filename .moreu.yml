@@ -3,7 +3,7 @@ secret: 1111
 
 database:
   driver: mysql
-  dsn: root:admin@(localhost:3306)/goubase?charset=utf8&parseTime=True&loc=Local
+  dsn: root:admin@(localhost:3306)/moreu?charset=utf8&parseTime=True&loc=Local
 
 oauth2:
   authUrl: https://github.com/login/oauth/authorize

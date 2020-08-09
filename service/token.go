@@ -52,8 +52,8 @@ func newRoleClaims(subject string, ttl int, roles []string) *roleClaims {
 	timeNow := time.Now()
 	return &roleClaims{
 		StandardClaims: jwt.StandardClaims{
-			Issuer:    "GoUBase",
-			Audience:  "GoUBaseUsers",
+			Issuer:    "moreu",
+			Audience:  "moreuUsers",
 			ExpiresAt: timeNow.Add(time.Duration(ttl) * time.Second).Unix(),
 			IssuedAt:  timeNow.Unix(),
 			NotBefore: timeNow.Unix(),

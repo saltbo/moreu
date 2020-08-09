@@ -6,8 +6,8 @@ import (
 
 	"github.com/saltbo/gopkg/cryptoutil"
 
-	"github.com/saltbo/goubase/model"
-	"github.com/saltbo/goubase/pkg/ormutil"
+	"github.com/saltbo/moreu/model"
+	"github.com/saltbo/moreu/pkg/ormutil"
 )
 
 type User struct {
@@ -22,14 +22,16 @@ func UserExist(email string) (*model.User, bool) {
 	return nil, false
 }
 
-func UserCreate(email string) (*model.User, error) {
-	user, exist := UserExist(email)
+func UserCreate(email, password string) (*model.User, error) {
+	_, exist := UserExist(email)
 	if exist {
 		return nil, fmt.Errorf("user already exist")
 	}
 
-	user.Email = email
-	user.Password = cryptoutil.Md5Hex(email)
+	user := &model.User{
+		Email:    email,
+		Password: cryptoutil.Md5Hex(password),
+	}
 	if err := ormutil.DB().Create(user).Error; err != nil {
 		return nil, err
 	}
@@ -52,12 +54,12 @@ func UserSignIn(email, password string) (*model.User, error) {
 		return nil, fmt.Errorf("user not exist")
 	}
 
-	if !user.Enabled {
-		return nil, fmt.Errorf("account is not activated")
+	if user.Password != cryptoutil.Md5Hex(password) {
+		return nil, fmt.Errorf("invalid password")
 	}
 
-	if user.Password != password {
-		return nil, fmt.Errorf("invalid password")
+	if !user.Enabled {
+		return nil, fmt.Errorf("account is not activated")
 	}
 
 	return user, nil

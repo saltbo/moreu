@@ -7,9 +7,9 @@ import (
 	"github.com/saltbo/gopkg/ginutil"
 	_ "github.com/saltbo/gopkg/httputil"
 
-	"github.com/saltbo/goubase/config"
-	"github.com/saltbo/goubase/rest/bind"
-	"github.com/saltbo/goubase/service"
+	"github.com/saltbo/moreu/config"
+	"github.com/saltbo/moreu/rest/bind"
+	"github.com/saltbo/moreu/service"
 )
 
 type UserResource struct {
@@ -78,7 +78,7 @@ func (rs *UserResource) create(c *gin.Context) {
 		return
 	}
 
-	user, err := service.UserCreate(p.Email)
+	user, err := service.UserCreate(p.Email, p.Password)
 	if err != nil {
 		ginutil.JSONBadRequest(c, err)
 		return

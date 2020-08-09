@@ -29,10 +29,10 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/storyicon/grbac"
 
-	"github.com/saltbo/goubase/config"
-	"github.com/saltbo/goubase/model"
-	"github.com/saltbo/goubase/pkg/ormutil"
-	"github.com/saltbo/goubase/rest"
+	"github.com/saltbo/moreu/config"
+	"github.com/saltbo/moreu/model"
+	"github.com/saltbo/moreu/pkg/ormutil"
+	"github.com/saltbo/moreu/rest"
 )
 
 // serverCmd represents the server command
@@ -63,7 +63,7 @@ func serverRun() {
 	ormutil.Init(conf.Database.Driver, conf.Database.DSN)
 	ormutil.DB().AutoMigrate(&model.User{}, &model.UserProfile{})
 
-	rs := ginutil.NewServer(":8080")
+	rs := ginutil.NewServer(":8081")
 	rs.SetupGroupRS("/ubase/api", rest.NewUserResource(conf))
 	rs.SetupGroupRS("/ubase/api", rest.NewTokenResource(conf))
 	rs.SetupStatic("/ubase", conf.Root)

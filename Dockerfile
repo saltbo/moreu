@@ -1,4 +1,4 @@
 FROM scratch
-COPY goubase /
+COPY moreu /
 
-ENTRYPOINT ["/goubase"]
+ENTRYPOINT ["/moreu"]

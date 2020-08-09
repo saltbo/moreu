@@ -1,4 +1,4 @@
-module github.com/saltbo/goubase
+module github.com/saltbo/moreu
 
 go 1.14
 

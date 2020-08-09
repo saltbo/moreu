@@ -12,8 +12,8 @@ import (
 	"github.com/saltbo/gopkg/httputil"
 	"github.com/storyicon/grbac"
 
-	"github.com/saltbo/goubase/config"
-	"github.com/saltbo/goubase/service"
+	"github.com/saltbo/moreu/config"
+	"github.com/saltbo/moreu/service"
 )
 
 type ReverseProxy struct {
