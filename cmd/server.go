@@ -1,17 +1,23 @@
 /*
-Copyright © 2020 NAME HERE <EMAIL ADDRESS>
+Copyright © 2020 Ambor <saltbo@foxmail.com>
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-    http://www.apache.org/licenses/LICENSE-2.0
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
 */
 package cmd
 
@@ -23,9 +29,10 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/storyicon/grbac"
 
-	"github.com/saltbo/authcar/config"
-	"github.com/saltbo/authcar/pkg/rolec"
-	"github.com/saltbo/authcar/rest"
+	"github.com/saltbo/goubase/config"
+	"github.com/saltbo/goubase/model"
+	"github.com/saltbo/goubase/pkg/ormutil"
+	"github.com/saltbo/goubase/rest"
 )
 
 // serverCmd represents the server command
@@ -45,16 +52,6 @@ to quickly create a Cobra application.`,
 
 func init() {
 	rootCmd.AddCommand(serverCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// serverCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// serverCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
 func serverRun() {
@@ -63,36 +60,28 @@ func serverRun() {
 		log.Fatalf("conf: %v", err)
 	}
 
+	ormutil.Init(conf.Database.Driver, conf.Database.DSN)
+	ormutil.DB().AutoMigrate(&model.User{}, &model.UserProfile{})
+
+	rs := ginutil.NewServer(":8080")
+	rs.SetupGroupRS("/ubase/api", rest.NewUserResource(conf))
+	rs.SetupGroupRS("/ubase/api", rest.NewTokenResource(conf))
+	rs.SetupStatic("/ubase", conf.Root)
+	rs.SetupSwagger()
+	rs.SetupPing()
+
+	// upstream routers
 	roleLoader := grbac.WithYAML(conf.Roles.Loader, time.Second)
-	jwtRole, err := rolec.NewJWTRole(conf.Secret, roleLoader)
+	rbac, err := grbac.New(roleLoader)
 	if err != nil {
 		log.Fatalln(err)
 	}
-
-	// define and start server
-	rs := ginutil.NewServer(":8080")
-	oauthRouter := rest.NewOauth(conf.Oauth2, jwtRole)
-	oauthRouter.SetupRoleLoader(roleLoaderInit())
-	rs.SetupRS("/oauth", oauthRouter)
-	for _, router := range conf.Routers {
-		rs.SetupRS(router.Pattern, rest.NewReverseProxy(router.Upstream, jwtRole))
-	}
-
-	// serve the static files
-	if conf.Root != "" {
-		rs.SetupStatic("/", conf.Root)
-		rs.SetupIndex(conf.Root)
-	}
+	rs.SetupEngineRS(rest.NewReverseProxy(conf.Routers, rbac))
+	rs.SetupStatic("/", conf.Root)
+	rs.SetupIndex(conf.Root)
 
 	// server run
 	if err := rs.Run(); err != nil {
 		log.Fatalln(err)
-	}
-}
-
-func roleLoaderInit() rest.RoleLoader {
-	return func(uid string) ([]string, error) {
-		// 查询用户角色
-		return nil, nil
 	}
 }

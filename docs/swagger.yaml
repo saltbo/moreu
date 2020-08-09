@@ -1,0 +1,173 @@
+basePath: /ubase/api
+definitions:
+  bind.BodyToken:
+    properties:
+      captcha:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  bind.BodyUser:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  bind.BodyUserPatch:
+    properties:
+      enabled:
+        type: boolean
+      password:
+        type: string
+      token:
+        type: string
+    type: object
+  httputil.JSONResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        type: object
+      msg:
+        type: string
+    type: object
+  model.User:
+    properties:
+      created:
+        type: string
+      deleted:
+        type: string
+      email:
+        type: string
+      enabled:
+        type: boolean
+      id:
+        type: integer
+      password:
+        type: string
+      roles:
+        type: string
+      updated:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a sample server Petstore server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Swagger Example API
+  version: "1.0"
+paths:
+  /tokens:
+    post:
+      consumes:
+      - application/json
+      description: 用于账户登录和申请密码重置
+      parameters:
+      - description: 参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/bind.BodyToken'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httputil.JSONResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.JSONResponse'
+      summary: 登录/密码重置
+      tags:
+      - Tokens
+  /users:
+    post:
+      consumes:
+      - application/json
+      description: 注册一个用户
+      parameters:
+      - description: 参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/bind.BodyUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/httputil.JSONResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.User'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.JSONResponse'
+      summary: 用户注册
+      tags:
+      - Users
+  /users/{email}:
+    patch:
+      consumes:
+      - application/json
+      description: 用于账户激活和密码重置
+      parameters:
+      - description: 邮箱
+        in: path
+        name: email
+        required: true
+        type: string
+      - description: 参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/bind.BodyUserPatch'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httputil.JSONResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.JSONResponse'
+      summary: 更新一项用户信息
+      tags:
+      - Users
+swagger: "2.0"

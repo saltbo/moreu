@@ -1,7 +1,7 @@
 .PHONY: all dep lint vet test test-coverage build clean
 
 # custom define
-PROJECT := authcar
+PROJECT := goubase
 MAINFILE := main.go
 
 all: build

@@ -2,8 +2,6 @@ package config
 
 import (
 	"github.com/spf13/viper"
-
-	"github.com/saltbo/authcar/pkg/oauth2"
 )
 
 type Roles struct {
@@ -21,12 +19,26 @@ type Router struct {
 	Upstream Upstream `yaml:"upstream"`
 }
 
+type Email struct {
+	Host     string `yaml:"host"`
+	User     string `yaml:"user"`
+	Password string `yaml:"password"`
+}
+
+type Database struct {
+	Driver string `yml:"driver"`
+	DSN    string `yml:"dsn"`
+}
+
+type Routers []Router
+
 type Config struct {
-	Root    string        `yaml:"root"`
-	Secret  string        `yaml:"secret"`
-	Oauth2  oauth2.Config `yaml:"oauth2"`
-	Roles   Roles         `yaml:"roles"`
-	Routers []Router      `yaml:"routers"`
+	SiteOrigin string   `yaml:"site_origin"`
+	Database   Database `yml:"database"`
+	Root       string   `yaml:"root"`
+	Secret     string   `yaml:"secret"`
+	Roles      Roles    `yaml:"roles"`
+	Routers    Routers  `yaml:"routers"`
 }
 
 func Parse() (*Config, error) {

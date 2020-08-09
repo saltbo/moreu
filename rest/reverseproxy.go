@@ -10,54 +10,71 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/saltbo/gopkg/ginutil"
 	"github.com/saltbo/gopkg/httputil"
+	"github.com/storyicon/grbac"
 
-	"github.com/saltbo/authcar/config"
-	"github.com/saltbo/authcar/pkg/rolec"
+	"github.com/saltbo/goubase/config"
+	"github.com/saltbo/goubase/service"
 )
 
 type ReverseProxy struct {
-	upstream config.Upstream
-	jwtRole  *rolec.JWTRole
+	routers config.Routers
+	rbac    *grbac.Controller
 }
 
-func NewReverseProxy(upstream config.Upstream, jwtRole *rolec.JWTRole) *ReverseProxy {
+func NewReverseProxy(routers config.Routers, rbac *grbac.Controller) *ReverseProxy {
 	return &ReverseProxy{
-		upstream: upstream,
-		jwtRole:  jwtRole,
+		routers: routers,
+		rbac:    rbac,
 	}
 }
 
 func (rp *ReverseProxy) Register(router *gin.RouterGroup) {
-	u, err := url.Parse(rp.upstream.Address)
-	if err != nil {
-		log.Fatalf("[upstream] invalid address: %s", err)
-	}
+	for _, r := range rp.routers {
+		u, err := url.Parse(r.Upstream.Address)
+		if err != nil {
+			log.Fatalf("[upstream] invalid address: %s", err)
+		}
 
-	header := http.Header{}
-	for k, v := range rp.upstream.Headers {
-		header.Set(k, v)
-	}
+		header := http.Header{}
+		for k, v := range r.Upstream.Headers {
+			header.Set(k, v)
+		}
 
-	upstream := httputil.NewReverseProxy(u, header)
-	router.Any("/*action", rp.createReverseProxy(upstream))
+		upstream := httputil.NewReverseProxy(u, header)
+		rRouter := router.Group(r.Pattern)
+		rRouter.Use(rp.Auth).Any("/*action", func(c *gin.Context) {
+			upstream.ServeHTTP(c.Writer, c.Request)
+		})
+	}
 }
 
-func (rp *ReverseProxy) createReverseProxy(upstream *httputil.ReverseProxy) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		token, err := c.Cookie("token")
-		if errors.Is(err, http.ErrNoCookie) {
-			ginutil.JSONUnauthorized(c, fmt.Errorf("none token!"))
-			return
-		} else if err != nil {
-			ginutil.JSONUnauthorized(c, err)
-			return
-		}
-
-		if err := rp.jwtRole.Verify(token, c.Request); err != nil {
-			ginutil.JSONForbidden(c, err)
-			return
-		}
-
-		upstream.ServeHTTP(c.Writer, c.Request)
+func (rp *ReverseProxy) Auth(c *gin.Context) {
+	token, err := c.Cookie("token")
+	if errors.Is(err, http.ErrNoCookie) {
+		ginutil.JSONUnauthorized(c, fmt.Errorf("none token!"))
+		return
+	} else if err != nil {
+		ginutil.JSONUnauthorized(c, err)
+		return
 	}
+
+	rc, err := service.TokenVerify(token)
+	if err != nil {
+		ginutil.JSONForbidden(c, err)
+		return
+	}
+
+	state, err := rp.rbac.IsRequestGranted(c.Request, rc.Roles)
+	if err != nil {
+		ginutil.JSONForbidden(c, err)
+		return
+	}
+
+	if !state.IsGranted() {
+		ginutil.JSONForbidden(c, fmt.Errorf("您没有权限进行此操作，请联系管理员"))
+		return
+	}
+
+	c.Request.Header.Set("X-Auth-Sub", rc.Subject)
+	c.Next()
 }

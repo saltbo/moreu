@@ -3,13 +3,13 @@ before:
   hooks:
     - go mod download
 builds:
-  - id: server
+  - id: goubase
     main: ./main.go
     ldflags:
       - -s -w
-      - -X github.com/saltbo/authcar/cmd.release={{.Version}}
-      - -X github.com/saltbo/authcar/cmd.commit={{.Commit}}
-      - -X github.com/saltbo/authcar/cmd.repo={{.GitURL}}
+      - -X github.com/saltbo/goubase/cmd.release={{.Version}}
+      - -X github.com/saltbo/goubase/cmd.commit={{.Commit}}
+      - -X github.com/saltbo/goubase/cmd.repo={{.GitURL}}
     env:
       - CGO_ENABLED=0
     goos:
@@ -38,16 +38,10 @@ changelog:
     exclude:
       - '^docs:'
       - '^test:'
-nfpms:
-  - file_name_template: '{{ .ProjectName }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
-    homepage: https://github.com/saltbo/{{ .ProjectName }}
-    description: Convenient static file deployment tool that supports multiple platforms
-    maintainer: Ambor <saltbo@foxmail.com>
-    license: MIT
-    formats:
-      - deb
-      - rpm
-    dependencies:
-      - git
-    recommends:
-      - golang
+dockers:
+  -
+    binaries:
+      - goubase
+    image_templates:
+      - "saltbo/{{.ProjectName}}:{{ .Tag }}"
+      - "saltbo/{{.ProjectName}}:latest"
