@@ -57,7 +57,7 @@ func UserSignIn(email, password string) (*model.User, error) {
 		return nil, fmt.Errorf("invalid password")
 	}
 
-	if !user.Enabled {
+	if !user.Activated {
 		return nil, fmt.Errorf("account is not activated")
 	}
 
@@ -70,7 +70,7 @@ func UserActivate(email string) error {
 		return fmt.Errorf("user not exist")
 	}
 
-	if err := ormutil.DB().Model(user).Update("enabled", true).Error; err != nil {
+	if err := ormutil.DB().Model(user).Update("activated", true).Error; err != nil {
 		return err
 	}
 

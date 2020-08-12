@@ -73,7 +73,7 @@ func (rs *TokenResource) create(c *gin.Context) {
 		return
 	}
 
-	resetLink := service.PasswordRestLink(rs.conf.SiteOrigin, p.Email, token)
+	resetLink := service.PasswordRestLink(rs.conf.Host, p.Email, token)
 	if err := service.PasswordResetNotify(p.Email, resetLink); err != nil {
 		ginutil.JSONServerError(c, err)
 		return

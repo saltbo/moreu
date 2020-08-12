@@ -11,7 +11,7 @@ type BodyUser struct {
 }
 
 type BodyUserPatch struct {
-	Token    string `json:"token"`
-	Password string `json:"password"`
-	Enabled  bool   `json:"enabled"`
+	Token     string `json:"token"`
+	Password  string `json:"password"`
+	Activated bool   `json:"activated"`
 }

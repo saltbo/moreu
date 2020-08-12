@@ -29,6 +29,8 @@ import (
 
 	"github.com/saltbo/moreu/config"
 	"github.com/saltbo/moreu/model"
+	"github.com/saltbo/moreu/pkg/jwtutil"
+	"github.com/saltbo/moreu/pkg/mailutil"
 	"github.com/saltbo/moreu/pkg/ormutil"
 	"github.com/saltbo/moreu/rest"
 )
@@ -58,8 +60,9 @@ func serverRun() {
 		log.Fatalf("conf: %v", err)
 	}
 
-	ormutil.Init(conf.Database.Driver, conf.Database.DSN)
-	ormutil.DB().AutoMigrate(&model.User{}, &model.UserProfile{})
+	jwtutil.Init(conf.Secret)
+	mailutil.Init(conf.Email)
+	ormutil.Init(conf.Database, &model.User{}, &model.UserProfile{})
 
 	rs := ginutil.NewServer(":8081")
 	rs.SetupGroupRS("/moreu/api", rest.NewUserResource(conf))
@@ -69,7 +72,7 @@ func serverRun() {
 	rs.SetupPing()
 
 	// load rbac config
-	rest.RBACInit(conf.Roles.Loader)
+	//rest.RBACInit(conf.Roles.Loader)
 
 	// upstream routers
 	rs.SetupRS(rest.NewReverseProxy(conf.Routers))

@@ -120,7 +120,7 @@ func (rs *UserResource) create(c *gin.Context) {
 		return
 	}
 
-	activateLink := service.ActivateLink(rs.conf.SiteOrigin, p.Email, token)
+	activateLink := service.ActivateLink(rs.conf.Host, p.Email, token)
 	if err := service.SignupNotify(p.Email, activateLink); err != nil {
 		ginutil.JSONServerError(c, err)
 		return
@@ -160,7 +160,7 @@ func (rs *UserResource) patch(c *gin.Context) {
 	}
 
 	// account activate
-	if p.Enabled {
+	if p.Activated {
 		if err := service.UserActivate(email); err != nil {
 			ginutil.JSONServerError(c, err)
 			return

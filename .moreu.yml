@@ -1,24 +1,15 @@
-root: ../zpan-front/dist
+host: http://inlets.saltbo.cn/
+root: ../moreu-front/dist
 secret: 1111
+
+email:
+  host: smtpdm.aliyun.com:25
+  user: no-reply@saltbo.fun
+  password: mG077URe2Wh9
 
 database:
   driver: mysql
   dsn: root:admin@(localhost:3306)/moreu?charset=utf8&parseTime=True&loc=Local
-
-oauth2:
-  authUrl: https://github.com/login/oauth/authorize
-  tokenUrl: https://github.com/login/oauth/access_token
-  userUrl: https://api.github.com/user
-  clientId: de0c54393500d5a62510
-  clientSecret: b171be4c6540a50c075f1a303c37998990e81153
-  scope: user
-
-roles:
-  loader: ./roles.yml
-  upstream:
-    address: http://localhost:9312/api/member-roles
-    headers:
-      Authorization: f1h6lVxxxxxxxxxxxxxxxxxxkIo3
 
 routers:
   - pattern: /api

@@ -7,7 +7,7 @@ import (
 )
 
 func ActivateLink(origin, email, token string) string {
-	return fmt.Sprintf("%s/moreu/login/%s", origin, encodeToKey(email, token))
+	return fmt.Sprintf("%s/moreu/signin/%s", origin, encodeToKey(email, token))
 }
 
 func PasswordRestLink(origin, email, token string) string {

@@ -5,36 +5,21 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+
+	"github.com/saltbo/moreu/pkg/jwtutil"
 )
 
-var defaultJwt = NewToken("2333")
-
-type Token struct {
-	secret string
-}
-
-func NewToken(secret string) *Token {
-	return &Token{secret: secret}
-}
-
-func (p *Token) create(claims jwt.Claims) (string, error) {
-	return jwt.NewWithClaims(jwt.SigningMethodHS512, claims).SignedString([]byte(p.secret))
-}
-
-func (p *Token) validation(token *jwt.Token) (interface{}, error) {
-	if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-		return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+func TokenCreate(email string, ttl int, roles ...string) (string, error) {
+	_, exist := UserExist(email)
+	if !exist {
+		return "", fmt.Errorf("user not exist")
 	}
 
-	return []byte(p.secret), nil
-}
-
-func TokenCreate(subject string, ttl int, roles ...string) (string, error) {
-	return defaultJwt.create(newRoleClaims(subject, ttl, roles))
+	return jwtutil.Issue(newRoleClaims(email, ttl, roles))
 }
 
 func TokenVerify(tokenStr string) (*roleClaims, error) {
-	token, err := jwt.ParseWithClaims(tokenStr, &roleClaims{}, defaultJwt.validation)
+	token, err := jwtutil.Verify(tokenStr, &roleClaims{})
 	if err != nil {
 		return nil, fmt.Errorf("token valid failed: %s", err)
 	}
