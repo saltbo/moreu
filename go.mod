@@ -13,6 +13,7 @@ require (
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/viper v1.4.0
 	github.com/storyicon/grbac v0.0.0-20200224041032-a0461737df7e
+	github.com/stretchr/testify v1.6.1
 	github.com/swaggo/swag v1.6.7
 	gopkg.in/resty.v1 v1.12.0 // indirect
 )

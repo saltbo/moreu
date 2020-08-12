@@ -1,9 +1,11 @@
 package mailutil
 
 import (
+	"fmt"
 	"log"
 	"net"
 	"net/smtp"
+	"strings"
 )
 
 var defaultMail *Mail
@@ -24,6 +26,7 @@ func Send(subject, to, body string) error {
 type Config struct {
 	Host     string `yaml:"host"`
 	User     string `yaml:"user"`
+	Sender   string `yaml:"sender"`
 	Password string `yaml:"password"`
 }
 
@@ -41,13 +44,18 @@ func NewMail(conf Config) (*Mail, error) {
 
 	return &Mail{
 		conf: conf,
-		auth: smtp.PlainAuth("", conf.User, conf.Password, host),
+		auth: smtp.PlainAuth("", conf.Sender, conf.Password, host),
 	}, nil
 }
 
 func (m *Mail) Send(subject, to, body string) error {
+	headers := []string{
+		fmt.Sprintf("To: %s", to),
+		fmt.Sprintf("From: %s <%s>", m.conf.User, m.conf.Sender),
+		fmt.Sprintf("Subject: %s", subject),
+	}
+	headerStr := strings.Join(headers, "\r\n")
 	contentType := "Content-Type: text/html; charset=UTF-8"
-
-	msg := []byte("To: " + to + "\r\nFrom: " + m.conf.User + "\r\nSubject: " + subject + "\r\n" + contentType + "\r\n\r\n" + body)
-	return smtp.SendMail(m.conf.Host, m.auth, m.conf.User, []string{to}, msg)
+	msg := fmt.Sprintf("%s\r\n%s\r\n\r\n%s", headerStr, contentType, body)
+	return smtp.SendMail(m.conf.Host, m.auth, m.conf.Sender, []string{to}, []byte(msg))
 }
