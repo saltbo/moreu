@@ -11,7 +11,7 @@ func ActivateLink(origin, email, token string) string {
 }
 
 func PasswordRestLink(origin, email, token string) string {
-	return fmt.Sprintf("%s/moreu/password_reset/%s", origin, encodeToKey(email, token))
+	return fmt.Sprintf("%s/moreu/password-reset/%s", origin, encodeToKey(email, token))
 }
 
 var base64Encode = base64.URLEncoding.EncodeToString
