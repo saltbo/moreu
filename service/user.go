@@ -5,13 +5,11 @@ import (
 	"strings"
 
 	"github.com/saltbo/gopkg/cryptoutil"
+	"github.com/saltbo/gopkg/randutil"
 
 	"github.com/saltbo/moreu/model"
 	"github.com/saltbo/moreu/pkg/ormutil"
 )
-
-type User struct {
-}
 
 func UserExist(email string) (*model.User, bool) {
 	user := new(model.User)
@@ -30,6 +28,7 @@ func UserCreate(email, password string) (*model.User, error) {
 
 	user := &model.User{
 		Email:    email,
+		Username: fmt.Sprintf("muid-%s", randutil.RandString(16)),
 		Password: cryptoutil.Md5Hex(password),
 	}
 	if err := ormutil.DB().Create(user).Error; err != nil {

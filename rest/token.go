@@ -73,8 +73,8 @@ func (rs *TokenResource) create(c *gin.Context) {
 		return
 	}
 
-	link := fmt.Sprintf("%s/login/resetpwd?email=%s&rtoken=%s", rs.conf.SiteOrigin, p.Email, token)
-	if err := service.PasswordResetNotify(p.Email, link); err != nil {
+	resetLink := service.PasswordRestLink(rs.conf.SiteOrigin, p.Email, token)
+	if err := service.PasswordResetNotify(p.Email, resetLink); err != nil {
 		ginutil.JSONServerError(c, err)
 		return
 	}

@@ -7,8 +7,9 @@ import (
 
 type User struct {
 	ID       int64     `json:"id"`
-	Email    string    `json:"email" gorm:"type:varchar(100);unique_index;not null"`
-	Password string    `json:"password" gorm:"size:32;not null"`
+	Email    string    `json:"email" gorm:"size:32;unique_index;not null"`
+	Username string    `json:"username" gorm:"size:20;unique_index;not null"`
+	Password string    `json:"-" gorm:"size:32;not null"`
 	Roles    string    `json:"roles" gorm:"size:64;not null"`
 	Enabled  bool      `json:"enabled" gorm:"not null"`
 	Deleted  time.Time `json:"deleted" gorm:"column:deleted_at;not null"`

@@ -23,11 +23,9 @@ package cmd
 
 import (
 	"log"
-	"time"
 
 	"github.com/saltbo/gopkg/ginutil"
 	"github.com/spf13/cobra"
-	"github.com/storyicon/grbac"
 
 	"github.com/saltbo/moreu/config"
 	"github.com/saltbo/moreu/model"
@@ -64,19 +62,17 @@ func serverRun() {
 	ormutil.DB().AutoMigrate(&model.User{}, &model.UserProfile{})
 
 	rs := ginutil.NewServer(":8081")
-	rs.SetupGroupRS("/ubase/api", rest.NewUserResource(conf))
-	rs.SetupGroupRS("/ubase/api", rest.NewTokenResource(conf))
-	rs.SetupStatic("/ubase", conf.Root)
+	rs.SetupGroupRS("/moreu/api", rest.NewUserResource(conf))
+	rs.SetupGroupRS("/moreu/api", rest.NewTokenResource(conf))
+	//rs.SetupStatic("/moreu", conf.Root)
 	rs.SetupSwagger()
 	rs.SetupPing()
 
+	// load rbac config
+	rest.RBACInit(conf.Roles.Loader)
+
 	// upstream routers
-	roleLoader := grbac.WithYAML(conf.Roles.Loader, time.Second)
-	rbac, err := grbac.New(roleLoader)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	rs.SetupEngineRS(rest.NewReverseProxy(conf.Routers, rbac))
+	rs.SetupRS(rest.NewReverseProxy(conf.Routers))
 	rs.SetupStatic("/", conf.Root)
 	rs.SetupIndex(conf.Root)
 

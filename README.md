@@ -25,6 +25,17 @@ copy to the desired location.
 
 ## Usage
 
+## Endpoints
+<!-- markdown-swagger -->
+ Endpoint            | Method | Auth? | Description               
+ ------------------- | ------ | ----- | --------------------------
+ `/tokens`           | POST   | No    | 用于账户登录和申请密码重置
+ `/users`            | GET    | No    | 获取一个用户信息          
+ `/users`            | POST   | No    | 注册一个用户              
+ `/users/{email}`    | PATCH  | No    | 用于账户激活和密码重置    
+ `/users/{username}` | GET    | No    | 获取一个用户信息          
+<!-- /markdown-swagger -->
+
 ## Contributing
 See [CONTRIBUTING](CONTRIBUTING.md) for details on submitting patches and the contribution workflow.
 

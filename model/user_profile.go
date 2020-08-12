@@ -11,9 +11,9 @@ type UserProfile struct {
 	URL      string    `json:"url" gorm:"size:255;not null"`
 	Company  string    `json:"company" gorm:"size:32;not null"`
 	Location string    `json:"location" gorm:"size:32;not null"`
-	Deleted  time.Time `json:"deleted" gorm:"not null"`
-	Created  time.Time `json:"created" gorm:"not null"`
-	Updated  time.Time `json:"updated" gorm:"not null"`
+	Deleted  time.Time `json:"deleted" gorm:"column:deleted_at;not null"`
+	Created  time.Time `json:"created" gorm:"column:created_at;not null"`
+	Updated  time.Time `json:"updated" gorm:"column:updated_at;not null"`
 }
 
 func (UserProfile) TableName() string {

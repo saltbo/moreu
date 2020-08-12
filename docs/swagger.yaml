@@ -28,6 +28,18 @@ definitions:
       token:
         type: string
     type: object
+  bind.QueryUser:
+    properties:
+      limit:
+        type: integer
+      name:
+        type: string
+      offset:
+        type: integer
+    type: object
+  gin.H:
+    additionalProperties: true
+    type: object
   httputil.JSONResponse:
     properties:
       code:
@@ -49,12 +61,37 @@ definitions:
         type: boolean
       id:
         type: integer
-      password:
-        type: string
       roles:
         type: string
       updated:
         type: string
+      username:
+        type: string
+    type: object
+  model.UserProfile:
+    properties:
+      avatar:
+        type: string
+      bio:
+        type: string
+      company:
+        type: string
+      created:
+        type: string
+      deleted:
+        type: string
+      id:
+        type: integer
+      location:
+        type: string
+      nickname:
+        type: string
+      updated:
+        type: string
+      url:
+        type: string
+      user_id:
+        type: integer
     type: object
 host: localhost:8080
 info:
@@ -101,6 +138,52 @@ paths:
       tags:
       - Tokens
   /users:
+    get:
+      consumes:
+      - application/json
+      description: 获取一个用户信息
+      parameters:
+      - in: query
+        name: limit
+        type: integer
+      - in: query
+        name: name
+        type: string
+      - in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/httputil.JSONResponse'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/gin.H'
+                  - properties:
+                      list:
+                        items:
+                          $ref: '#/definitions/model.UserProfile'
+                        type: array
+                    type: object
+                total:
+                  type: integer
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.JSONResponse'
+      summary: 用户查询
+      tags:
+      - Users
     post:
       consumes:
       - application/json
@@ -168,6 +251,40 @@ paths:
           schema:
             $ref: '#/definitions/httputil.JSONResponse'
       summary: 更新一项用户信息
+      tags:
+      - Users
+  /users/{username}:
+    get:
+      consumes:
+      - application/json
+      description: 获取一个用户信息
+      parameters:
+      - description: 用户名
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/httputil.JSONResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.UserProfile'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.JSONResponse'
+      summary: 用户查询
       tags:
       - Users
 swagger: "2.0"

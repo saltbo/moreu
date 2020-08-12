@@ -8,6 +8,8 @@ import (
 	_ "github.com/saltbo/gopkg/httputil"
 
 	"github.com/saltbo/moreu/config"
+	"github.com/saltbo/moreu/model"
+	"github.com/saltbo/moreu/pkg/ormutil"
 	"github.com/saltbo/moreu/rest/bind"
 	"github.com/saltbo/moreu/service"
 )
@@ -26,10 +28,22 @@ func (rs *UserResource) Register(router *gin.RouterGroup) {
 	router.POST("/users", rs.create)        // 账户注册
 	router.PATCH("/users/:email", rs.patch) // 账户激活、密码重置
 
-	//router.GET("/users", rs.findAll)  // 管理员权限
-	//router.GET("/users/:uid", rs.find) // 管理员权限
+	router.GET("/users", LoginAuth, RoleAuth, rs.findAll) // todo 注入默认规则
+	router.GET("/users/:username", rs.find)
+	//router.PUT("/users/:username", LoginAuth, rs.update)
 }
 
+// findAll godoc
+// @Tags Users
+// @Summary 用户查询
+// @Description 获取一个用户信息
+// @Accept json
+// @Produce json
+// @Param query query bind.QueryUser true "参数"
+// @Success 200 {object} httputil.JSONResponse{data=gin.H{list=[]model.UserProfile},total=int64}
+// @Failure 400 {object} httputil.JSONResponse
+// @Failure 500 {object} httputil.JSONResponse
+// @Router /users [get]
 func (rs *UserResource) findAll(c *gin.Context) {
 	p := new(bind.QueryUser)
 	if err := c.BindQuery(p); err != nil {
@@ -37,27 +51,43 @@ func (rs *UserResource) findAll(c *gin.Context) {
 		return
 	}
 
-	//list := make([]model.User, 0)
-	//total, err := dao.DB.Limit(p.Limit, p.Offset).FindAndCount(&list)
-	//if err != nil {
-	//	ginutil.JSONBadRequest(c, err)
-	//	return
-	//}
+	list := make([]model.UserProfile, 0)
+	if err := ormutil.DB().Offset(p.Offset).Limit(p.Limit).Find(&list).Error; err != nil {
+		ginutil.JSONBadRequest(c, err)
+		return
+	}
 
-	//ginutil.JSONList(c, list, total)
+	var total int64
+	ormutil.DB().Model(model.UserProfile{}).Count(&total)
+
+	ginutil.JSONList(c, list, total)
 }
 
+// find godoc
+// @Tags Users
+// @Summary 用户查询
+// @Description 获取一个用户信息
+// @Accept json
+// @Produce json
+// @Param username path string true "用户名"
+// @Success 200 {object} httputil.JSONResponse{data=model.UserProfile}
+// @Failure 400 {object} httputil.JSONResponse
+// @Failure 500 {object} httputil.JSONResponse
+// @Router /users/{username} [get]
 func (rs *UserResource) find(c *gin.Context) {
-	//userId := c.Param("uid")
-	//
-	//user := new(model.User)
-	//if _, err := dao.DB.Id(userId).Get(user); err != nil {
-	//	ginutil.JSONBadRequest(c, err)
-	//	return
-	//}
-	//
-	//user.Password = ""
-	//ginutil.JSONData(c, user)
+	user := &model.User{Username: c.Param("username")}
+	if err := ormutil.DB().First(user).Error; err != nil {
+		ginutil.JSONBadRequest(c, err)
+		return
+	}
+
+	userProfile := &model.UserProfile{UserId: user.ID}
+	if err := ormutil.DB().First(userProfile).Error; err != nil {
+		ginutil.JSONBadRequest(c, err)
+		return
+	}
+
+	ginutil.JSONData(c, userProfile)
 }
 
 // create godoc
@@ -90,11 +120,8 @@ func (rs *UserResource) create(c *gin.Context) {
 		return
 	}
 
-	ginutil.JSONData(c, token)
-	return
-
-	activeLink := fmt.Sprintf("%s/ubase/tokens?email=%s&at=%s", rs.conf.SiteOrigin, p.Email, token)
-	if err := service.SignupNotify(p.Email, activeLink); err != nil {
+	activateLink := service.ActivateLink(rs.conf.SiteOrigin, p.Email, token)
+	if err := service.SignupNotify(p.Email, activateLink); err != nil {
 		ginutil.JSONServerError(c, err)
 		return
 	}
