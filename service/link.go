@@ -6,6 +6,10 @@ import (
 	"strings"
 )
 
+func SignInLink(redirect string) string {
+	return fmt.Sprintf("/moreu/signin?redirect=%s", redirect)
+}
+
 func ActivateLink(origin, email, token string) string {
 	return fmt.Sprintf("%s/moreu/signin/%s", origin, encodeToKey(email, token))
 }

@@ -35,7 +35,7 @@ func APIAuth(c *gin.Context) {
 
 func StaticAuth(c *gin.Context) {
 	if err := loginAuth(c); err != nil {
-		c.Redirect(http.StatusFound, "/moreu/signin")
+		c.Redirect(http.StatusFound, service.SignInLink(c.Request.URL.RequestURI()))
 		c.Abort()
 		return
 	}
