@@ -28,7 +28,7 @@ func (rs *UserResource) Register(router *gin.RouterGroup) {
 	router.POST("/users", rs.create)        // 账户注册
 	router.PATCH("/users/:email", rs.patch) // 账户激活、密码重置
 
-	router.GET("/users", LoginAuth, RoleAuth, rs.findAll) // todo 注入默认规则
+	router.GET("/users", APIAuth, RoleAuth, rs.findAll) // todo 注入默认规则
 	router.GET("/users/:username", rs.find)
 	//router.PUT("/users/:username", LoginAuth, rs.update)
 }

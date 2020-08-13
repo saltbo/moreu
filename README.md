@@ -9,22 +9,6 @@
 
 English | [🇨🇳中文](https://saltbo.cn/moreu)
 
-// 检查登录状态，未登录则跳去登录
-
-## Install the pre-compiled binary
-
-**deb/rpm**:
-
-Download the `.deb` or `.rpm` from the [releases page](https://github.com/saltbo/moreu/releases) and
-install with `dpkg -i` and `rpm -i` respectively.
-
-**manually**:
-
-Download the pre-compiled binaries from the [releases page](https://github.com/saltbo/moreu/releases) and
-copy to the desired location.
-
-## Usage
-
 ## Endpoints
 <!-- markdown-swagger -->
  Endpoint            | Method | Auth? | Description               

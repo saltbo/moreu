@@ -18,12 +18,21 @@ type (
 	Routers []Router
 )
 
+type (
+	Static struct {
+		Pattern string `yaml:"pattern"`
+		DistDir string `yaml:"distdir"`
+	}
+	Statics []Static
+)
+
 type Config struct {
 	Host     string          `yaml:"host"`
-	Root     string          `yaml:"root"`
+	Moreu    string          `yaml:"moreu"`
 	Secret   string          `yaml:"secret"`
 	Email    mailutil.Config `yaml:"email"`
 	Database ormutil.Config  `yaml:"database"`
+	Statics  Statics         `yaml:"statics"`
 	Routers  Routers         `yaml:"routers"`
 }
 

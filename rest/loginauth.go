@@ -26,24 +26,35 @@ func RBACInit(name string) {
 	defaultRBAC = rbac
 }
 
-func LoginAuth(c *gin.Context) {
-	token, err := c.Cookie("token")
-	if errors.Is(err, http.ErrNoCookie) {
-		ginutil.JSONUnauthorized(c, fmt.Errorf("none token!"))
-		return
-	} else if err != nil {
+func APIAuth(c *gin.Context) {
+	if err := loginAuth(c); err != nil {
 		ginutil.JSONUnauthorized(c, err)
 		return
+	}
+}
+
+func StaticAuth(c *gin.Context) {
+	if err := loginAuth(c); err != nil {
+		c.Redirect(http.StatusFound, "/moreu/signin")
+		c.Abort()
+		return
+	}
+}
+
+func loginAuth(c *gin.Context) error {
+	token, err := c.Cookie("token")
+	if errors.Is(err, http.ErrNoCookie) {
+		return fmt.Errorf("none token")
 	}
 
 	rc, err := service.TokenVerify(token)
 	if err != nil {
-		ginutil.JSONForbidden(c, err)
-		return
+		return err
 	}
 
 	c.Set("roles", rc.Roles)
 	c.Request.Header.Set("X-Auth-Sub", rc.Subject)
+	return nil
 }
 
 func RoleAuth(c *gin.Context) {

@@ -12,31 +12,35 @@ import (
 )
 
 type ReverseProxy struct {
-	routers config.Routers
+	router    config.Router
+	protected bool
 }
 
-func NewReverseProxy(routers config.Routers) *ReverseProxy {
+func NewReverseProxy(router config.Router, protected bool) *ReverseProxy {
 	return &ReverseProxy{
-		routers: routers,
+		router:    router,
+		protected: protected,
 	}
 }
 
 func (rp *ReverseProxy) Register(router *gin.RouterGroup) {
-	for _, r := range rp.routers {
-		u, err := url.Parse(r.Upstream.Address)
-		if err != nil {
-			log.Fatalf("[upstream] invalid address: %s", err)
-		}
-
-		header := http.Header{}
-		for k, v := range r.Upstream.Headers {
-			header.Set(k, v)
-		}
-
-		upstream := httputil.NewReverseProxy(u, header)
-		rRouter := router.Group(r.Pattern)
-		rRouter.Use(LoginAuth, RoleAuth).Any("/*action", func(c *gin.Context) {
-			upstream.ServeHTTP(c.Writer, c.Request)
-		})
+	u, err := url.Parse(rp.router.Upstream.Address)
+	if err != nil {
+		log.Fatalf("[upstream] invalid address: %s", err)
 	}
+
+	header := http.Header{}
+	for k, v := range rp.router.Upstream.Headers {
+		header.Set(k, v)
+	}
+
+	upstream := httputil.NewReverseProxy(u, header)
+	rRouter := router.Group(rp.router.Pattern)
+	if rp.protected {
+		rRouter.Use(APIAuth, RoleAuth)
+	}
+
+	rRouter.Any("/*action", func(c *gin.Context) {
+		upstream.ServeHTTP(c.Writer, c.Request)
+	})
 }

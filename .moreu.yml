@@ -1,5 +1,5 @@
 host: http://inlets.saltbo.cn/
-root: ../moreu-front/dist
+moreu: ../moreu-front/dist
 secret: 1111
 
 email:
@@ -14,6 +14,8 @@ database:
 routers:
   - pattern: /api
     upstream:
-      address: http://localhost:8081
-      headers:
-        Authorization: f1h6lVxxxxxxxxxxxxxxxxxxxxxXJkIo3
+      address: http://localhost:8222
+
+statics:
+  - pattern: /
+    distDir: ../zpan-front/dist
