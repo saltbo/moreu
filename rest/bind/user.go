@@ -15,3 +15,12 @@ type BodyUserPatch struct {
 	Password  string `json:"password"`
 	Activated bool   `json:"activated"`
 }
+
+type BodyUserProfile struct {
+	Avatar   string `json:"avatar"`
+	Nickname string `json:"nickname"`
+	Bio      string `json:"bio"`
+	URL      string `json:"url"`
+	Company  string `json:"company"`
+	Location string `json:"location"`
+}

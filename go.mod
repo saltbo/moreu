@@ -9,7 +9,7 @@ require (
 	github.com/jinzhu/gorm v1.9.15
 	github.com/magiconair/properties v1.8.0
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/saltbo/gopkg v0.0.0-20200813150920-f0915cde0660
+	github.com/saltbo/gopkg v0.0.0-20200814135303-dc29a68fb9c9
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/viper v1.4.0
 	github.com/storyicon/grbac v0.0.0-20200224041032-a0461737df7e

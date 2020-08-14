@@ -1,8 +1,6 @@
 package rest
 
 import (
-	"fmt"
-
 	"github.com/gin-gonic/gin"
 	"github.com/saltbo/gopkg/ginutil"
 	_ "github.com/saltbo/gopkg/httputil"
@@ -54,15 +52,14 @@ func (rs *TokenResource) create(c *gin.Context) {
 		}
 
 		expireSec := 7 * 24 * 3600
-		token, err := service.TokenCreate(p.Email, expireSec, user.RolesSplit()...)
+		token, err := service.TokenCreate(user.Username, expireSec, user.RolesSplit()...)
 		if err != nil {
 			ginutil.JSONServerError(c, err)
 			return
 		}
 
-		ginutil.SetCookie(c, "token", token, expireSec)
-		ginutil.SetCookie(c, "uid", fmt.Sprint(user.ID), expireSec)
-		ginutil.JSONData(c, token)
+		tokenCookieSet(c, token, expireSec)
+		ginutil.JSON(c)
 		return
 	}
 
@@ -83,5 +80,6 @@ func (rs *TokenResource) create(c *gin.Context) {
 }
 
 func (rs *TokenResource) delete(c *gin.Context) {
+	tokenCookieClean(c)
 	return
 }

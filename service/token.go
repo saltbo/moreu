@@ -9,13 +9,13 @@ import (
 	"github.com/saltbo/moreu/pkg/jwtutil"
 )
 
-func TokenCreate(email string, ttl int, roles ...string) (string, error) {
-	_, exist := UserExist(email)
+func TokenCreate(username string, ttl int, roles ...string) (string, error) {
+	_, exist := UsernameExist(username)
 	if !exist {
 		return "", fmt.Errorf("user not exist")
 	}
 
-	return jwtutil.Issue(newRoleClaims(email, ttl, roles))
+	return jwtutil.Issue(newRoleClaims(username, ttl, roles))
 }
 
 func TokenVerify(tokenStr string) (*roleClaims, error) {

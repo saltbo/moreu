@@ -37,7 +37,7 @@ func (rp *ReverseProxy) Register(router *gin.RouterGroup) {
 	upstream := httputil.NewReverseProxy(u, header)
 	rRouter := router.Group(rp.router.Pattern)
 	if rp.protected {
-		rRouter.Use(APIAuth, RoleAuth)
+		rRouter.Use(LoginAuth, RoleAuth)
 	}
 
 	rRouter.Any("/*action", func(c *gin.Context) {

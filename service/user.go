@@ -11,7 +11,16 @@ import (
 	"github.com/saltbo/moreu/pkg/ormutil"
 )
 
-func UserExist(email string) (*model.User, bool) {
+func UsernameExist(username string) (*model.User, bool) {
+	user := new(model.User)
+	if !ormutil.DB().Where("username = ?", username).First(user).RecordNotFound() {
+		return user, true
+	}
+
+	return nil, false
+}
+
+func UserEmailExist(email string) (*model.User, bool) {
 	user := new(model.User)
 	if !ormutil.DB().Where("email = ?", email).First(user).RecordNotFound() {
 		return user, true
@@ -21,7 +30,7 @@ func UserExist(email string) (*model.User, bool) {
 }
 
 func UserCreate(email, password string) (*model.User, error) {
-	_, exist := UserExist(email)
+	_, exist := UserEmailExist(email)
 	if exist {
 		return nil, fmt.Errorf("user already exist")
 	}
@@ -48,7 +57,7 @@ func UserCreate(email, password string) (*model.User, error) {
 }
 
 func UserSignIn(email, password string) (*model.User, error) {
-	user, exist := UserExist(email)
+	user, exist := UserEmailExist(email)
 	if !exist {
 		return nil, fmt.Errorf("user not exist")
 	}
@@ -65,7 +74,7 @@ func UserSignIn(email, password string) (*model.User, error) {
 }
 
 func UserActivate(email string) error {
-	user, exist := UserExist(email)
+	user, exist := UserEmailExist(email)
 	if !exist {
 		return fmt.Errorf("user not exist")
 	}
@@ -79,7 +88,7 @@ func UserActivate(email string) error {
 
 // ResetPassword update the new password
 func UserPasswordReset(email, newPwd string) error {
-	user, exist := UserExist(email)
+	user, exist := UserEmailExist(email)
 	if !exist {
 		return fmt.Errorf("user not exist")
 	}

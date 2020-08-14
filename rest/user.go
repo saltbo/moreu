@@ -28,15 +28,17 @@ func (rs *UserResource) Register(router *gin.RouterGroup) {
 	router.POST("/users", rs.create)        // 账户注册
 	router.PATCH("/users/:email", rs.patch) // 账户激活、密码重置
 
-	router.GET("/users", APIAuth, RoleAuth, rs.findAll) // todo 注入默认规则
-	router.GET("/users/:username", rs.find)
-	//router.PUT("/users/:username", LoginAuth, rs.update)
+	router.Use(LoginAuth, RoleAuth)
+	router.GET("/user", rs.profile)           // 获取已登录用户的所有信息
+	router.GET("/users", rs.findAll)          // 查询用户列表，需管理员权限
+	router.GET("/users/:username", rs.find)   // 查询一个用户的公开信息，无需登录
+	router.PUT("/users/:username", rs.update) // 更新用户个人信息
 }
 
 // findAll godoc
 // @Tags Users
-// @Summary 用户查询
-// @Description 获取一个用户信息
+// @Summary 用户列表
+// @Description 获取用户列表信息
 // @Accept json
 // @Produce json
 // @Param query query bind.QueryUser true "参数"
@@ -65,8 +67,35 @@ func (rs *UserResource) findAll(c *gin.Context) {
 
 // find godoc
 // @Tags Users
+// @Summary 当前登录用户信息
+// @Description 获取已登录用户的详细信息
+// @Accept json
+// @Produce json
+// @Param username path string true "用户名"
+// @Success 200 {object} httputil.JSONResponse{data=model.UserProfile}
+// @Failure 400 {object} httputil.JSONResponse
+// @Failure 500 {object} httputil.JSONResponse
+// @Router /user [get]
+func (rs *UserResource) profile(c *gin.Context) {
+	user := &model.User{Username: usernameGet(c)}
+	if err := ormutil.DB().First(user).Error; err != nil {
+		ginutil.JSONBadRequest(c, err)
+		return
+	}
+
+	userProfile := &model.UserProfile{UserId: user.ID}
+	if err := ormutil.DB().First(userProfile).Error; err != nil {
+		ginutil.JSONBadRequest(c, err)
+		return
+	}
+
+	ginutil.JSONData(c, userProfile)
+}
+
+// find godoc
+// @Tags Users
 // @Summary 用户查询
-// @Description 获取一个用户信息
+// @Description 获取一个用户的公开信息
 // @Accept json
 // @Produce json
 // @Param username path string true "用户名"
@@ -88,6 +117,50 @@ func (rs *UserResource) find(c *gin.Context) {
 	}
 
 	ginutil.JSONData(c, userProfile)
+}
+
+// find godoc
+// @Tags Users
+// @Summary 修改个人信息
+// @Description 更新用户的个人信息
+// @Accept json
+// @Produce json
+// @Param username path string true "用户名"
+// @Success 200 {object} httputil.JSONResponse
+// @Failure 400 {object} httputil.JSONResponse
+// @Failure 500 {object} httputil.JSONResponse
+// @Router /users/{username} [put]
+func (rs *UserResource) update(c *gin.Context) {
+	p := new(bind.BodyUserProfile)
+	if err := c.ShouldBindJSON(p); err != nil {
+		ginutil.JSONBadRequest(c, err)
+		return
+	}
+
+	user := new(model.User)
+	if err := ormutil.DB().Where("username=?", usernameGet(c)).First(user).Error; err != nil {
+		ginutil.JSONServerError(c, err)
+		return
+	}
+
+	userProfile := new(model.UserProfile)
+	if err := ormutil.DB().Where("user_id=?", user.ID).First(userProfile).Error; err != nil {
+		ginutil.JSONServerError(c, err)
+		return
+	}
+
+	userProfile.Avatar = p.Avatar
+	userProfile.Nickname = p.Nickname
+	userProfile.Bio = p.Bio
+	userProfile.URL = p.URL
+	userProfile.Company = p.Company
+	userProfile.Location = p.Location
+	if err := ormutil.DB().Save(userProfile).Error; err != nil {
+		ginutil.JSONServerError(c, err)
+		return
+	}
+
+	ginutil.JSON(c)
 }
 
 // create godoc
@@ -114,7 +187,7 @@ func (rs *UserResource) create(c *gin.Context) {
 		return
 	}
 
-	token, err := service.TokenCreate(p.Email, 6*3600, user.RolesSplit()...)
+	token, err := service.TokenCreate(user.Username, 6*3600, user.RolesSplit()...)
 	if err != nil {
 		ginutil.JSONServerError(c, err)
 		return
