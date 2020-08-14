@@ -10,11 +10,6 @@ import (
 )
 
 func TokenCreate(username string, ttl int, roles ...string) (string, error) {
-	_, exist := UsernameExist(username)
-	if !exist {
-		return "", fmt.Errorf("user not exist")
-	}
-
 	return jwtutil.Issue(newRoleClaims(username, ttl, roles))
 }
 

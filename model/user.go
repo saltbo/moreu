@@ -5,6 +5,11 @@ import (
 	"time"
 )
 
+const (
+	RoleAdmin  = "admin"
+	RoleMember = "member"
+)
+
 type User struct {
 	ID        int64     `json:"id"`
 	Email     string    `json:"email" gorm:"size:32;unique_index;not null"`

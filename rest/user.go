@@ -1,8 +1,6 @@
 package rest
 
 import (
-	"fmt"
-
 	"github.com/gin-gonic/gin"
 	"github.com/saltbo/gopkg/ginutil"
 	_ "github.com/saltbo/gopkg/httputil"
@@ -29,10 +27,11 @@ func (rs *UserResource) Register(router *gin.RouterGroup) {
 	router.PATCH("/users/:email", rs.patch) // 账户激活、密码重置
 
 	router.Use(LoginAuth, RoleAuth)
-	router.GET("/user", rs.profile)           // 获取已登录用户的所有信息
-	router.GET("/users", rs.findAll)          // 查询用户列表，需管理员权限
-	router.GET("/users/:username", rs.find)   // 查询一个用户的公开信息，无需登录
-	router.PUT("/users/:username", rs.update) // 更新用户个人信息
+	router.GET("/users", rs.findAll)        // 查询用户列表，需管理员权限
+	router.GET("/users/:username", rs.find) // 查询某一个用户的公开信息
+
+	router.GET("/user", rs.profile) // 获取已登录用户的所有信息
+	router.PUT("/user", rs.update)  // 更新已登录用户个人信息
 }
 
 // findAll godoc
@@ -67,33 +66,6 @@ func (rs *UserResource) findAll(c *gin.Context) {
 
 // find godoc
 // @Tags Users
-// @Summary 当前登录用户信息
-// @Description 获取已登录用户的详细信息
-// @Accept json
-// @Produce json
-// @Param username path string true "用户名"
-// @Success 200 {object} httputil.JSONResponse{data=model.UserProfile}
-// @Failure 400 {object} httputil.JSONResponse
-// @Failure 500 {object} httputil.JSONResponse
-// @Router /user [get]
-func (rs *UserResource) profile(c *gin.Context) {
-	user := &model.User{Username: usernameGet(c)}
-	if err := ormutil.DB().First(user).Error; err != nil {
-		ginutil.JSONBadRequest(c, err)
-		return
-	}
-
-	userProfile := &model.UserProfile{UserId: user.ID}
-	if err := ormutil.DB().First(userProfile).Error; err != nil {
-		ginutil.JSONBadRequest(c, err)
-		return
-	}
-
-	ginutil.JSONData(c, userProfile)
-}
-
-// find godoc
-// @Tags Users
 // @Summary 用户查询
 // @Description 获取一个用户的公开信息
 // @Accept json
@@ -104,9 +76,9 @@ func (rs *UserResource) profile(c *gin.Context) {
 // @Failure 500 {object} httputil.JSONResponse
 // @Router /users/{username} [get]
 func (rs *UserResource) find(c *gin.Context) {
-	user := &model.User{Username: c.Param("username")}
-	if err := ormutil.DB().First(user).Error; err != nil {
-		ginutil.JSONBadRequest(c, err)
+	user, err := service.UserGet(c.Param("username"))
+	if err != nil {
+		ginutil.JSONServerError(c, err)
 		return
 	}
 
@@ -119,7 +91,34 @@ func (rs *UserResource) find(c *gin.Context) {
 	ginutil.JSONData(c, userProfile)
 }
 
-// find godoc
+// profile godoc
+// @Tags Users
+// @Summary 当前登录用户信息
+// @Description 获取已登录用户的详细信息
+// @Accept json
+// @Produce json
+// @Param username path string true "用户名"
+// @Success 200 {object} httputil.JSONResponse{data=model.UserProfile}
+// @Failure 400 {object} httputil.JSONResponse
+// @Failure 500 {object} httputil.JSONResponse
+// @Router /user [get]
+func (rs *UserResource) profile(c *gin.Context) {
+	user, err := service.UserGet(usernameGet(c))
+	if err != nil {
+		ginutil.JSONServerError(c, err)
+		return
+	}
+
+	userProfile := &model.UserProfile{UserId: user.ID}
+	if err := ormutil.DB().First(userProfile).Error; err != nil {
+		ginutil.JSONBadRequest(c, err)
+		return
+	}
+
+	ginutil.JSONData(c, userProfile)
+}
+
+// update godoc
 // @Tags Users
 // @Summary 修改个人信息
 // @Description 更新用户的个人信息
@@ -137,8 +136,8 @@ func (rs *UserResource) update(c *gin.Context) {
 		return
 	}
 
-	user := new(model.User)
-	if err := ormutil.DB().Where("username=?", usernameGet(c)).First(user).Error; err != nil {
+	user, err := service.UserGet(usernameGet(c))
+	if err != nil {
 		ginutil.JSONServerError(c, err)
 		return
 	}
@@ -181,7 +180,7 @@ func (rs *UserResource) create(c *gin.Context) {
 		return
 	}
 
-	user, err := service.UserCreate(p.Email, p.Password)
+	user, err := service.UserCreate(p.Email, p.Password, model.RoleMember)
 	if err != nil {
 		ginutil.JSONBadRequest(c, err)
 		return
@@ -222,19 +221,15 @@ func (rs *UserResource) patch(c *gin.Context) {
 	}
 
 	// valid token
-	email := c.Param("email")
 	rc, err := service.TokenVerify(p.Token)
 	if err != nil {
 		ginutil.JSONBadRequest(c, err)
-		return
-	} else if rc.Subject != email {
-		ginutil.JSONBadRequest(c, fmt.Errorf("token not match for the email"))
 		return
 	}
 
 	// account activate
 	if p.Activated {
-		if err := service.UserActivate(email); err != nil {
+		if err := service.UserActivate(rc.Subject); err != nil {
 			ginutil.JSONServerError(c, err)
 			return
 		}
@@ -242,7 +237,7 @@ func (rs *UserResource) patch(c *gin.Context) {
 
 	// password reset
 	if p.Password != "" {
-		if err := service.UserPasswordReset(email, p.Password); err != nil {
+		if err := service.UserPasswordReset(rc.Subject, p.Password); err != nil {
 			ginutil.JSONServerError(c, err)
 			return
 		}

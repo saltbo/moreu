@@ -81,7 +81,7 @@ func serverRun() {
 
 	for _, static := range conf.Statics {
 		rs.SetupStatic(static.Pattern, static.DistDir)
-		rs.SetupIndex(static.Pattern, ginutil.NewIndex(static.DistDir, rest.StaticAuth))
+		rs.SetupIndex(static.Pattern, ginutil.NewIndex(static.DistDir, rest.StaticAuth, rest.RoleAuth))
 	}
 
 	// server run

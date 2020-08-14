@@ -77,11 +77,44 @@ var doc = `{
                         }
                     }
                 }
+            },
+            "delete": {
+                "description": "用户状态登出",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tokens"
+                ],
+                "summary": "退出登录",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.JSONResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.JSONResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.JSONResponse"
+                        }
+                    }
+                }
             }
         },
-        "/users": {
+        "/user": {
             "get": {
-                "description": "获取一个用户信息",
+                "description": "获取已登录用户的详细信息",
                 "consumes": [
                     "application/json"
                 ],
@@ -91,7 +124,63 @@ var doc = `{
                 "tags": [
                     "Users"
                 ],
-                "summary": "用户查询",
+                "summary": "当前登录用户信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户名",
+                        "name": "username",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/httputil.JSONResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.UserProfile"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.JSONResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.JSONResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "description": "获取用户列表信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "用户列表",
                 "parameters": [
                     {
                         "type": "integer",
@@ -272,7 +361,7 @@ var doc = `{
         },
         "/users/{username}": {
             "get": {
-                "description": "获取一个用户信息",
+                "description": "获取一个用户的公开信息",
                 "consumes": [
                     "application/json"
                 ],
@@ -324,6 +413,48 @@ var doc = `{
                         }
                     }
                 }
+            },
+            "put": {
+                "description": "更新用户的个人信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "修改个人信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户名",
+                        "name": "username",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.JSONResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.JSONResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.JSONResponse"
+                        }
+                    }
+                }
             }
         }
     },
@@ -331,8 +462,7 @@ var doc = `{
         "bind.BodyToken": {
             "type": "object",
             "required": [
-                "email",
-                "password"
+                "email"
             ],
             "properties": {
                 "captcha": {
@@ -360,7 +490,7 @@ var doc = `{
         "bind.BodyUserPatch": {
             "type": "object",
             "properties": {
-                "enabled": {
+                "activated": {
                     "type": "boolean"
                 },
                 "password": {
@@ -406,6 +536,9 @@ var doc = `{
         "model.User": {
             "type": "object",
             "properties": {
+                "activated": {
+                    "type": "boolean"
+                },
                 "created": {
                     "type": "string"
                 },
@@ -414,9 +547,6 @@ var doc = `{
                 },
                 "email": {
                     "type": "string"
-                },
-                "enabled": {
-                    "type": "boolean"
                 },
                 "id": {
                     "type": "integer"

@@ -10,7 +10,6 @@ definitions:
         type: string
     required:
     - email
-    - password
     type: object
   bind.BodyUser:
     properties:
@@ -21,7 +20,7 @@ definitions:
     type: object
   bind.BodyUserPatch:
     properties:
-      enabled:
+      activated:
         type: boolean
       password:
         type: string
@@ -51,14 +50,14 @@ definitions:
     type: object
   model.User:
     properties:
+      activated:
+        type: boolean
       created:
         type: string
       deleted:
         type: string
       email:
         type: string
-      enabled:
-        type: boolean
       id:
         type: integer
       roles:
@@ -108,6 +107,28 @@ info:
   version: "1.0"
 paths:
   /tokens:
+    delete:
+      consumes:
+      - application/json
+      description: 用户状态登出
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httputil.JSONResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.JSONResponse'
+      summary: 退出登录
+      tags:
+      - Tokens
     post:
       consumes:
       - application/json
@@ -137,11 +158,45 @@ paths:
       summary: 登录/密码重置
       tags:
       - Tokens
+  /user:
+    get:
+      consumes:
+      - application/json
+      description: 获取已登录用户的详细信息
+      parameters:
+      - description: 用户名
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/httputil.JSONResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.UserProfile'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.JSONResponse'
+      summary: 当前登录用户信息
+      tags:
+      - Users
   /users:
     get:
       consumes:
       - application/json
-      description: 获取一个用户信息
+      description: 获取用户列表信息
       parameters:
       - in: query
         name: limit
@@ -181,7 +236,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/httputil.JSONResponse'
-      summary: 用户查询
+      summary: 用户列表
       tags:
       - Users
     post:
@@ -257,7 +312,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: 获取一个用户信息
+      description: 获取一个用户的公开信息
       parameters:
       - description: 用户名
         in: path
@@ -285,6 +340,34 @@ paths:
           schema:
             $ref: '#/definitions/httputil.JSONResponse'
       summary: 用户查询
+      tags:
+      - Users
+    put:
+      consumes:
+      - application/json
+      description: 更新用户的个人信息
+      parameters:
+      - description: 用户名
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httputil.JSONResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.JSONResponse'
+      summary: 修改个人信息
       tags:
       - Users
 swagger: "2.0"

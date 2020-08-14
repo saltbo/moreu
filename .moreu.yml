@@ -4,7 +4,8 @@ secret: 1111
 
 email:
   host: smtpdm.aliyun.com:25
-  user: no-reply@saltbo.fun
+  sender: no-reply@saltbo.fun
+  username: Moreu
   password: mG077URe2Wh9
 
 database:

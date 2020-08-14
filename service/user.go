@@ -11,15 +11,6 @@ import (
 	"github.com/saltbo/moreu/pkg/ormutil"
 )
 
-func UsernameExist(username string) (*model.User, bool) {
-	user := new(model.User)
-	if !ormutil.DB().Where("username = ?", username).First(user).RecordNotFound() {
-		return user, true
-	}
-
-	return nil, false
-}
-
 func UserEmailExist(email string) (*model.User, bool) {
 	user := new(model.User)
 	if !ormutil.DB().Where("email = ?", email).First(user).RecordNotFound() {
@@ -29,16 +20,17 @@ func UserEmailExist(email string) (*model.User, bool) {
 	return nil, false
 }
 
-func UserCreate(email, password string) (*model.User, error) {
+func UserCreate(email, password string, roles ...string) (*model.User, error) {
 	_, exist := UserEmailExist(email)
 	if exist {
-		return nil, fmt.Errorf("user already exist")
+		return nil, fmt.Errorf("email already exist")
 	}
 
 	user := &model.User{
 		Email:    email,
-		Username: fmt.Sprintf("muid-%s", randutil.RandString(16)),
+		Username: fmt.Sprintf("mu%s", randutil.RandString(18)),
 		Password: cryptoutil.Md5Hex(password),
+		Roles:    strings.Join(roles, ","),
 	}
 	if err := ormutil.DB().Create(user).Error; err != nil {
 		return nil, err
@@ -47,10 +39,18 @@ func UserCreate(email, password string) (*model.User, error) {
 	userProfile := &model.UserProfile{
 		UserId:   user.ID,
 		Nickname: email[:strings.Index(email, "@")],
-		//Roles:    ROLE_MEMBER,
 	}
 	if err := ormutil.DB().Create(userProfile).Error; err != nil {
 		return nil, err
+	}
+
+	return user, nil
+}
+
+func UserGet(username string) (*model.User, error) {
+	user := new(model.User)
+	if ormutil.DB().Where("username = ?", username).First(user).RecordNotFound() {
+		return nil, fmt.Errorf("user not exist")
 	}
 
 	return user, nil
@@ -73,10 +73,10 @@ func UserSignIn(email, password string) (*model.User, error) {
 	return user, nil
 }
 
-func UserActivate(email string) error {
-	user, exist := UserEmailExist(email)
-	if !exist {
-		return fmt.Errorf("user not exist")
+func UserActivate(username string) error {
+	user, err := UserGet(username)
+	if err != nil {
+		return err
 	}
 
 	if err := ormutil.DB().Model(user).Update("activated", true).Error; err != nil {
@@ -87,10 +87,10 @@ func UserActivate(email string) error {
 }
 
 // ResetPassword update the new password
-func UserPasswordReset(email, newPwd string) error {
-	user, exist := UserEmailExist(email)
-	if !exist {
-		return fmt.Errorf("user not exist")
+func UserPasswordReset(username, newPwd string) error {
+	user, err := UserGet(username)
+	if err != nil {
+		return err
 	}
 
 	if err := ormutil.DB().Model(user).Update("password", cryptoutil.Md5Hex(newPwd)).Error; err != nil {

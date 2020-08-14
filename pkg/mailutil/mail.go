@@ -25,8 +25,8 @@ func Send(subject, to, body string) error {
 
 type Config struct {
 	Host     string `yaml:"host"`
-	User     string `yaml:"user"`
 	Sender   string `yaml:"sender"`
+	Username string `yaml:"username"`
 	Password string `yaml:"password"`
 }
 
@@ -51,7 +51,7 @@ func NewMail(conf Config) (*Mail, error) {
 func (m *Mail) Send(subject, to, body string) error {
 	headers := []string{
 		fmt.Sprintf("To: %s", to),
-		fmt.Sprintf("From: %s <%s>", m.conf.User, m.conf.Sender),
+		fmt.Sprintf("From: %s <%s>", m.conf.Username, m.conf.Sender),
 		fmt.Sprintf("Subject: %s", subject),
 	}
 	headerStr := strings.Join(headers, "\r\n")

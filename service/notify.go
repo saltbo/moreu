@@ -9,7 +9,7 @@ import (
 func SignupNotify(email, link string) error {
 	template := `
        <h3>账户激活链接</h3>
-       <p><a href="%s">点击此处重置密码</a></p>
+       <p><a href="%s">点击此处账户激活</a></p>
 		<p>如果您没有进行账号注册请忽略！</p>
        `
 	body := fmt.Sprintf(template, link)
