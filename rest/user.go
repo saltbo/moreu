@@ -1,6 +1,8 @@
 package rest
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/saltbo/gopkg/ginutil"
 	"github.com/saltbo/gopkg/gormutil"
@@ -76,9 +78,9 @@ func (rs *UserResource) findAll(c *gin.Context) {
 // @Failure 500 {object} httputil.JSONResponse
 // @Router /users/{username} [get]
 func (rs *UserResource) find(c *gin.Context) {
-	user, err := service.UserGet(c.Param("username"))
-	if err != nil {
-		ginutil.JSONServerError(c, err)
+	user := new(model.User)
+	if gormutil.DB().Where("username=?", c.Param("username")).First(user).RecordNotFound() {
+		ginutil.JSONServerError(c, fmt.Errorf("user not exist"))
 		return
 	}
 
@@ -103,7 +105,7 @@ func (rs *UserResource) find(c *gin.Context) {
 // @Failure 500 {object} httputil.JSONResponse
 // @Router /user [get]
 func (rs *UserResource) profile(c *gin.Context) {
-	user, err := service.UserGet(usernameGet(c))
+	user, err := service.UserGet(userIdGet(c))
 	if err != nil {
 		ginutil.JSONServerError(c, err)
 		return
@@ -136,7 +138,7 @@ func (rs *UserResource) update(c *gin.Context) {
 		return
 	}
 
-	user, err := service.UserGet(usernameGet(c))
+	user, err := service.UserGet(userIdGet(c))
 	if err != nil {
 		ginutil.JSONServerError(c, err)
 		return
@@ -186,7 +188,7 @@ func (rs *UserResource) create(c *gin.Context) {
 		return
 	}
 
-	token, err := service.TokenCreate(user.Username, 6*3600, user.RolesSplit()...)
+	token, err := service.TokenCreate(user.ID, 6*3600, user.RolesSplit()...)
 	if err != nil {
 		ginutil.JSONServerError(c, err)
 		return

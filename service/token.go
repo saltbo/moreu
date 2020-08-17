@@ -2,14 +2,15 @@ package service
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/saltbo/gopkg/jwtutil"
 )
 
-func TokenCreate(username string, ttl int, roles ...string) (string, error) {
-	return jwtutil.Issue(newRoleClaims(username, ttl, roles))
+func TokenCreate(uid int64, ttl int, roles ...string) (string, error) {
+	return jwtutil.Issue(newRoleClaims(uid, ttl, roles))
 }
 
 func TokenVerify(tokenStr string) (*roleClaims, error) {
@@ -27,7 +28,7 @@ type roleClaims struct {
 	Roles []string `json:"roles"`
 }
 
-func newRoleClaims(subject string, ttl int, roles []string) *roleClaims {
+func newRoleClaims(subject int64, ttl int, roles []string) *roleClaims {
 	timeNow := time.Now()
 	return &roleClaims{
 		StandardClaims: jwt.StandardClaims{
@@ -36,7 +37,7 @@ func newRoleClaims(subject string, ttl int, roles []string) *roleClaims {
 			ExpiresAt: timeNow.Add(time.Duration(ttl) * time.Second).Unix(),
 			IssuedAt:  timeNow.Unix(),
 			NotBefore: timeNow.Unix(),
-			Subject:   subject,
+			Subject:   strconv.FormatInt(subject, 10),
 		},
 		Roles: roles,
 	}

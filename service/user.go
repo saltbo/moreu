@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/saltbo/gopkg/cryptoutil"
@@ -47,9 +48,9 @@ func UserCreate(email, password string, roles ...string) (*model.User, error) {
 	return user, nil
 }
 
-func UserGet(username string) (*model.User, error) {
+func UserGet(uid int64) (*model.User, error) {
 	user := new(model.User)
-	if gormutil.DB().Where("username = ?", username).First(user).RecordNotFound() {
+	if gormutil.DB().Where("id=?", uid).First(user).RecordNotFound() {
 		return nil, fmt.Errorf("user not exist")
 	}
 
@@ -73,8 +74,9 @@ func UserSignIn(email, password string) (*model.User, error) {
 	return user, nil
 }
 
-func UserActivate(username string) error {
-	user, err := UserGet(username)
+func UserActivate(userId string) error {
+	uid, _ := strconv.ParseInt(userId, 10, 64)
+	user, err := UserGet(uid)
 	if err != nil {
 		return err
 	}
@@ -87,8 +89,9 @@ func UserActivate(username string) error {
 }
 
 // ResetPassword update the new password
-func UserPasswordReset(username, newPwd string) error {
-	user, err := UserGet(username)
+func UserPasswordReset(userId, newPwd string) error {
+	uid, _ := strconv.ParseInt(userId, 10, 64)
+	user, err := UserGet(uid)
 	if err != nil {
 		return err
 	}

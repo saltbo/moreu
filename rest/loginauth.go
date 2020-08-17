@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/saltbo/gopkg/ginutil"
 	"github.com/storyicon/grbac"
 
+	"github.com/saltbo/moreu/client"
 	"github.com/saltbo/moreu/service"
 )
 
@@ -52,9 +54,9 @@ func loginAuth(c *gin.Context) error {
 		return err
 	}
 
-	usernameSet(c, rc.Subject)
+	userIdSet(c, rc.Subject)
 	userRolesSet(c, rc.Roles)
-	c.Request.Header.Set(headerUserIdKey, rc.Subject)
+	c.Request.Header.Set(moreu.HeaderUserIdKey, rc.Subject)
 	return nil
 }
 
@@ -73,19 +75,19 @@ func RoleAuth(c *gin.Context) {
 
 // auth k-v
 const (
-	cookieTokenKey  = "moreu-token"
-	headerUserIdKey = "X-Moreu-Sub"
+	cookieTokenKey = "moreu-token"
 
-	ctxUsernameKey  = "username"
-	ctxUserRolesKey = "user-roles"
+	ctxUserIdKey    = "user_id"
+	ctxUserRolesKey = "user_roles"
 )
 
-func usernameSet(c *gin.Context, username string) {
-	c.Set(ctxUsernameKey, username)
+func userIdSet(c *gin.Context, userId string) {
+	uid, _ := strconv.ParseInt(userId, 10, 64)
+	c.Set(ctxUserIdKey, uid)
 }
 
-func usernameGet(c *gin.Context) string {
-	return c.GetString(ctxUsernameKey)
+func userIdGet(c *gin.Context) int64 {
+	return c.GetInt64(ctxUserIdKey)
 }
 
 func userRolesSet(c *gin.Context, roles []string) {
