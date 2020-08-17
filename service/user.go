@@ -5,15 +5,15 @@ import (
 	"strings"
 
 	"github.com/saltbo/gopkg/cryptoutil"
+	"github.com/saltbo/gopkg/gormutil"
 	"github.com/saltbo/gopkg/randutil"
 
 	"github.com/saltbo/moreu/model"
-	"github.com/saltbo/moreu/pkg/ormutil"
 )
 
 func UserEmailExist(email string) (*model.User, bool) {
 	user := new(model.User)
-	if !ormutil.DB().Where("email = ?", email).First(user).RecordNotFound() {
+	if !gormutil.DB().Where("email = ?", email).First(user).RecordNotFound() {
 		return user, true
 	}
 
@@ -32,7 +32,7 @@ func UserCreate(email, password string, roles ...string) (*model.User, error) {
 		Password: cryptoutil.Md5Hex(password),
 		Roles:    strings.Join(roles, ","),
 	}
-	if err := ormutil.DB().Create(user).Error; err != nil {
+	if err := gormutil.DB().Create(user).Error; err != nil {
 		return nil, err
 	}
 
@@ -40,7 +40,7 @@ func UserCreate(email, password string, roles ...string) (*model.User, error) {
 		UserId:   user.ID,
 		Nickname: email[:strings.Index(email, "@")],
 	}
-	if err := ormutil.DB().Create(userProfile).Error; err != nil {
+	if err := gormutil.DB().Create(userProfile).Error; err != nil {
 		return nil, err
 	}
 
@@ -49,7 +49,7 @@ func UserCreate(email, password string, roles ...string) (*model.User, error) {
 
 func UserGet(username string) (*model.User, error) {
 	user := new(model.User)
-	if ormutil.DB().Where("username = ?", username).First(user).RecordNotFound() {
+	if gormutil.DB().Where("username = ?", username).First(user).RecordNotFound() {
 		return nil, fmt.Errorf("user not exist")
 	}
 
@@ -79,7 +79,7 @@ func UserActivate(username string) error {
 		return err
 	}
 
-	if err := ormutil.DB().Model(user).Update("activated", true).Error; err != nil {
+	if err := gormutil.DB().Model(user).Update("activated", true).Error; err != nil {
 		return err
 	}
 
@@ -93,7 +93,7 @@ func UserPasswordReset(username, newPwd string) error {
 		return err
 	}
 
-	if err := ormutil.DB().Model(user).Update("password", cryptoutil.Md5Hex(newPwd)).Error; err != nil {
+	if err := gormutil.DB().Model(user).Update("password", cryptoutil.Md5Hex(newPwd)).Error; err != nil {
 		return err
 	}
 	// record the old password

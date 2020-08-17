@@ -1,10 +1,9 @@
 package config
 
 import (
+	"github.com/saltbo/gopkg/gormutil"
+	"github.com/saltbo/gopkg/mailutil"
 	"github.com/spf13/viper"
-
-	"github.com/saltbo/moreu/pkg/mailutil"
-	"github.com/saltbo/moreu/pkg/ormutil"
 )
 
 type (
@@ -31,7 +30,7 @@ type Config struct {
 	Moreu    string          `yaml:"moreu"`
 	Secret   string          `yaml:"secret"`
 	Email    mailutil.Config `yaml:"email"`
-	Database ormutil.Config  `yaml:"database"`
+	Database gormutil.Config `yaml:"database"`
 	Statics  Statics         `yaml:"statics"`
 	Routers  Routers         `yaml:"routers"`
 }

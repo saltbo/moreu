@@ -25,13 +25,13 @@ import (
 	"log"
 
 	"github.com/saltbo/gopkg/ginutil"
+	"github.com/saltbo/gopkg/gormutil"
+	"github.com/saltbo/gopkg/jwtutil"
+	"github.com/saltbo/gopkg/mailutil"
 	"github.com/spf13/cobra"
 
 	"github.com/saltbo/moreu/config"
 	"github.com/saltbo/moreu/model"
-	"github.com/saltbo/moreu/pkg/jwtutil"
-	"github.com/saltbo/moreu/pkg/mailutil"
-	"github.com/saltbo/moreu/pkg/ormutil"
 	"github.com/saltbo/moreu/rest"
 )
 
@@ -62,7 +62,7 @@ func serverRun() {
 
 	jwtutil.Init(conf.Secret)
 	mailutil.Init(conf.Email)
-	ormutil.Init(conf.Database, &model.User{}, &model.UserProfile{})
+	gormutil.Init(conf.Database, &model.User{}, &model.UserProfile{})
 
 	rs := ginutil.NewServer(":8081")
 	rs.SetupGroupRS("/moreu/api",

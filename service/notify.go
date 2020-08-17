@@ -3,7 +3,7 @@ package service
 import (
 	"fmt"
 
-	"github.com/saltbo/moreu/pkg/mailutil"
+	"github.com/saltbo/gopkg/mailutil"
 )
 
 func SignupNotify(email, link string) error {

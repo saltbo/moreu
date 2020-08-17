@@ -5,8 +5,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-
-	"github.com/saltbo/moreu/pkg/jwtutil"
+	"github.com/saltbo/gopkg/jwtutil"
 )
 
 func TokenCreate(username string, ttl int, roles ...string) (string, error) {

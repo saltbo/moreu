@@ -3,11 +3,11 @@ package rest
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/saltbo/gopkg/ginutil"
+	"github.com/saltbo/gopkg/gormutil"
 	_ "github.com/saltbo/gopkg/httputil"
 
 	"github.com/saltbo/moreu/config"
 	"github.com/saltbo/moreu/model"
-	"github.com/saltbo/moreu/pkg/ormutil"
 	"github.com/saltbo/moreu/rest/bind"
 	"github.com/saltbo/moreu/service"
 )
@@ -53,13 +53,13 @@ func (rs *UserResource) findAll(c *gin.Context) {
 	}
 
 	list := make([]model.UserProfile, 0)
-	if err := ormutil.DB().Offset(p.Offset).Limit(p.Limit).Find(&list).Error; err != nil {
+	if err := gormutil.DB().Offset(p.Offset).Limit(p.Limit).Find(&list).Error; err != nil {
 		ginutil.JSONBadRequest(c, err)
 		return
 	}
 
 	var total int64
-	ormutil.DB().Model(model.UserProfile{}).Count(&total)
+	gormutil.DB().Model(model.UserProfile{}).Count(&total)
 
 	ginutil.JSONList(c, list, total)
 }
@@ -83,7 +83,7 @@ func (rs *UserResource) find(c *gin.Context) {
 	}
 
 	userProfile := &model.UserProfile{UserId: user.ID}
-	if err := ormutil.DB().First(userProfile).Error; err != nil {
+	if err := gormutil.DB().First(userProfile).Error; err != nil {
 		ginutil.JSONBadRequest(c, err)
 		return
 	}
@@ -110,7 +110,7 @@ func (rs *UserResource) profile(c *gin.Context) {
 	}
 
 	userProfile := &model.UserProfile{UserId: user.ID}
-	if err := ormutil.DB().First(userProfile).Error; err != nil {
+	if err := gormutil.DB().First(userProfile).Error; err != nil {
 		ginutil.JSONBadRequest(c, err)
 		return
 	}
@@ -143,7 +143,7 @@ func (rs *UserResource) update(c *gin.Context) {
 	}
 
 	userProfile := new(model.UserProfile)
-	if err := ormutil.DB().Where("user_id=?", user.ID).First(userProfile).Error; err != nil {
+	if err := gormutil.DB().Where("user_id=?", user.ID).First(userProfile).Error; err != nil {
 		ginutil.JSONServerError(c, err)
 		return
 	}
@@ -154,7 +154,7 @@ func (rs *UserResource) update(c *gin.Context) {
 	userProfile.URL = p.URL
 	userProfile.Company = p.Company
 	userProfile.Location = p.Location
-	if err := ormutil.DB().Save(userProfile).Error; err != nil {
+	if err := gormutil.DB().Save(userProfile).Error; err != nil {
 		ginutil.JSONServerError(c, err)
 		return
 	}
