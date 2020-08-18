@@ -6,8 +6,16 @@ import (
 	"strings"
 )
 
-func SignInLink(redirect string) string {
+func Link2SignIn(redirect string) string {
 	return fmt.Sprintf("/moreu/signin?redirect=%s", redirect)
+}
+
+func Link2ServerError(err error) string {
+	return fmt.Sprintf("/moreu/error?msg=%s", err.Error())
+}
+
+func Link2Forbidden() string {
+	return fmt.Sprintf("/moreu/forbidden")
 }
 
 func ActivateLink(origin, email, token string) string {

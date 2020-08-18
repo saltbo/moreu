@@ -28,7 +28,7 @@ func (rs *UserResource) Register(router *gin.RouterGroup) {
 	router.POST("/users", rs.create)        // 账户注册
 	router.PATCH("/users/:email", rs.patch) // 账户激活、密码重置
 
-	router.Use(LoginAuth, RoleAuth)
+	router.Use(LoginAuth)
 	router.GET("/users", rs.findAll)        // 查询用户列表，需管理员权限
 	router.GET("/users/:username", rs.find) // 查询某一个用户的公开信息
 

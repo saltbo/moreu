@@ -76,12 +76,12 @@ func serverRun() {
 
 	rest.RBACInit("roles.yml")
 	for _, router := range conf.Routers {
-		rs.SetupRS(rest.NewReverseProxy(router, true))
+		rs.SetupRS(rest.NewReverseProxy(router))
 	}
 
 	for _, static := range conf.Statics {
 		rs.SetupStatic(static.Pattern, static.DistDir)
-		rs.SetupIndex(static.Pattern, ginutil.NewIndex(static.DistDir, rest.StaticAuth, rest.RoleAuth))
+		rs.SetupIndex(static.Pattern, ginutil.NewIndex(static.DistDir, rest.StaticAuth))
 	}
 
 	// server run

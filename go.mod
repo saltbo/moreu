@@ -8,7 +8,7 @@ require (
 	github.com/gin-gonic/gin v1.6.3
 	github.com/magiconair/properties v1.8.0
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/saltbo/gopkg v0.0.0-20200817013558-116ba552a859
+	github.com/saltbo/gopkg v0.0.0-20200818144227-84907810779f
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/viper v1.4.0
 	github.com/storyicon/grbac v0.0.0-20200224041032-a0461737df7e

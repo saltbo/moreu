@@ -12,14 +12,12 @@ import (
 )
 
 type ReverseProxy struct {
-	router    config.Router
-	protected bool
+	router config.Router
 }
 
-func NewReverseProxy(router config.Router, protected bool) *ReverseProxy {
+func NewReverseProxy(router config.Router) *ReverseProxy {
 	return &ReverseProxy{
-		router:    router,
-		protected: protected,
+		router: router,
 	}
 }
 
@@ -36,11 +34,7 @@ func (rp *ReverseProxy) Register(router *gin.RouterGroup) {
 
 	upstream := httputil.NewReverseProxy(u, header)
 	rRouter := router.Group(rp.router.Pattern)
-	if rp.protected {
-		rRouter.Use(LoginAuth, RoleAuth)
-	}
-
-	rRouter.Any("/*action", func(c *gin.Context) {
+	rRouter.Use(LoginAuth).Any("/*action", func(c *gin.Context) {
 		upstream.ServeHTTP(c.Writer, c.Request)
 	})
 }

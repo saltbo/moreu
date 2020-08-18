@@ -2,7 +2,6 @@ package rest
 
 import (
 	"errors"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -13,6 +12,7 @@ import (
 	"github.com/storyicon/grbac"
 
 	"github.com/saltbo/moreu/client"
+	"github.com/saltbo/moreu/model"
 	"github.com/saltbo/moreu/service"
 )
 
@@ -29,56 +29,61 @@ func RBACInit(name string) {
 }
 
 func LoginAuth(c *gin.Context) {
-	if err := loginAuth(c); err != nil {
+	token, err := tokenCookieGet(c)
+	if errors.Is(err, http.ErrNoCookie) {
+		token, _ = service.TokenCreate(0, 30, model.RoleAnonymous) // 未登录状态颁发一个匿名Token
+	}
+
+	rc, err := service.TokenVerify(token)
+	if err != nil {
 		ginutil.JSONUnauthorized(c, err)
+		return
+	}
+
+	userIdSet(c, rc.Subject)
+	client.InjectUserId(c.Request, rc.Subject)
+	state, err := defaultRBAC.IsRequestGranted(c.Request, rc.Roles)
+	if err != nil {
+		ginutil.JSONServerError(c, err)
+		return
+	}
+
+	if !state.IsGranted() {
+		ginutil.JSONForbidden(c, err)
 		return
 	}
 }
 
 func StaticAuth(c *gin.Context) {
-	if err := loginAuth(c); err != nil {
-		c.Redirect(http.StatusFound, service.SignInLink(c.Request.URL.RequestURI()))
-		c.Abort()
-		return
-	}
-}
-
-func loginAuth(c *gin.Context) error {
 	token, err := tokenCookieGet(c)
 	if errors.Is(err, http.ErrNoCookie) {
-		return fmt.Errorf("none token")
+		ginutil.FoundRedirect(c, service.Link2SignIn(c.Request.URL.RequestURI()))
+		return
 	}
 
 	rc, err := service.TokenVerify(token)
 	if err != nil {
-		return err
+		ginutil.FoundRedirect(c, service.Link2SignIn(c.Request.URL.RequestURI()))
+		return
 	}
 
-	userIdSet(c, rc.Subject)
-	userRolesSet(c, rc.Roles)
-	c.Request.Header.Set(moreu.HeaderUserIdKey, rc.Subject)
-	return nil
-}
-
-func RoleAuth(c *gin.Context) {
-	state, err := defaultRBAC.IsRequestGranted(c.Request, userRolesGet(c))
+	state, err := defaultRBAC.IsRequestGranted(c.Request, rc.Roles)
 	if err != nil {
-		ginutil.JSONForbidden(c, err)
+		ginutil.FoundRedirect(c, service.Link2ServerError(err))
 		return
 	}
 
 	if !state.IsGranted() {
-		ginutil.JSONForbidden(c, fmt.Errorf("您没有权限进行此操作，请联系管理员"))
+		ginutil.FoundRedirect(c, service.Link2Forbidden())
 		return
 	}
 }
 
 // auth k-v
 const (
-	cookieTokenKey = "moreu-token"
+	ctxUserIdKey = "user_id"
 
-	ctxUserIdKey    = "user_id"
-	ctxUserRolesKey = "user_roles"
+	cookieTokenKey = "moreu-token"
 )
 
 func userIdSet(c *gin.Context, userId string) {
@@ -88,14 +93,6 @@ func userIdSet(c *gin.Context, userId string) {
 
 func userIdGet(c *gin.Context) int64 {
 	return c.GetInt64(ctxUserIdKey)
-}
-
-func userRolesSet(c *gin.Context, roles []string) {
-	c.Set(ctxUserRolesKey, roles)
-}
-
-func userRolesGet(c *gin.Context) []string {
-	return c.GetStringSlice(ctxUserRolesKey)
 }
 
 func tokenCookieSet(c *gin.Context, token string, expireSec int) {

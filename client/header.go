@@ -1,15 +1,22 @@
-package moreu
+package client
 
-import "strconv"
+import (
+	"net/http"
+	"strconv"
+)
 
-const HeaderUserIdKey = "X-Moreu-Sub"
+const headerKeyUserId = "X-Moreu-Sub"
 
 type Context interface {
 	GetHeader(key string) string
 }
 
+func InjectUserId(req *http.Request, subject string) {
+	req.Header.Set(headerKeyUserId, subject)
+}
+
 func GetUserId(c Context) int64 {
-	sub := c.GetHeader(HeaderUserIdKey)
+	sub := c.GetHeader(headerKeyUserId)
 	uid, _ := strconv.ParseInt(sub, 10, 64)
 	return uid
 }
