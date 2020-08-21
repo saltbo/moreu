@@ -6,9 +6,9 @@ import (
 )
 
 const (
-	RoleAdmin     = "admin"
-	RoleMember    = "member"
-	RoleAnonymous = "anonymous"
+	RoleAdmin  = "admin"
+	RoleMember = "member"
+	RoleGuest  = "guest"
 )
 
 type User struct {

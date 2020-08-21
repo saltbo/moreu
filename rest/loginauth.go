@@ -2,6 +2,7 @@ package rest
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -31,7 +32,7 @@ func RBACInit(name string) {
 func LoginAuth(c *gin.Context) {
 	token, err := tokenCookieGet(c)
 	if errors.Is(err, http.ErrNoCookie) {
-		token, _ = service.TokenCreate(0, 30, model.RoleAnonymous) // 未登录状态颁发一个匿名Token
+		token, _ = service.TokenCreate(0, 30, model.RoleGuest) // 未登录状态颁发一个匿名Token
 	}
 
 	rc, err := service.TokenVerify(token)
@@ -49,7 +50,7 @@ func LoginAuth(c *gin.Context) {
 	}
 
 	if !state.IsGranted() {
-		ginutil.JSONForbidden(c, err)
+		ginutil.JSONForbidden(c, fmt.Errorf("access deny"))
 		return
 	}
 }
@@ -57,8 +58,7 @@ func LoginAuth(c *gin.Context) {
 func StaticAuth(c *gin.Context) {
 	token, err := tokenCookieGet(c)
 	if errors.Is(err, http.ErrNoCookie) {
-		ginutil.FoundRedirect(c, service.Link2SignIn(c.Request.URL.RequestURI()))
-		return
+		token, _ = service.TokenCreate(0, 30, model.RoleGuest) // 未登录状态颁发一个匿名Token
 	}
 
 	rc, err := service.TokenVerify(token)
@@ -74,7 +74,7 @@ func StaticAuth(c *gin.Context) {
 	}
 
 	if !state.IsGranted() {
-		ginutil.FoundRedirect(c, service.Link2Forbidden())
+		ginutil.FoundRedirect(c, service.Link2SignIn(c.Request.URL.RequestURI()))
 		return
 	}
 }

@@ -5,9 +5,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/saltbo/gopkg/cryptoutil"
 	"github.com/saltbo/gopkg/gormutil"
-	"github.com/saltbo/gopkg/randutil"
+	"github.com/saltbo/gopkg/strutil"
 
 	"github.com/saltbo/moreu/model"
 )
@@ -29,8 +28,8 @@ func UserCreate(email, password string, roles ...string) (*model.User, error) {
 
 	user := &model.User{
 		Email:    email,
-		Username: fmt.Sprintf("mu%s", randutil.RandString(18)),
-		Password: cryptoutil.Md5Hex(password),
+		Username: fmt.Sprintf("mu%s", strutil.RandomText(18)),
+		Password: strutil.Md5Hex(password),
 		Roles:    strings.Join(roles, ","),
 	}
 	if err := gormutil.DB().Create(user).Error; err != nil {
@@ -63,7 +62,7 @@ func UserSignIn(email, password string) (*model.User, error) {
 		return nil, fmt.Errorf("user not exist")
 	}
 
-	if user.Password != cryptoutil.Md5Hex(password) {
+	if user.Password != strutil.Md5Hex(password) {
 		return nil, fmt.Errorf("invalid password")
 	}
 
@@ -96,7 +95,7 @@ func UserPasswordReset(userId, newPwd string) error {
 		return err
 	}
 
-	if err := gormutil.DB().Model(user).Update("password", cryptoutil.Md5Hex(newPwd)).Error; err != nil {
+	if err := gormutil.DB().Model(user).Update("password", strutil.Md5Hex(newPwd)).Error; err != nil {
 		return err
 	}
 	// record the old password
