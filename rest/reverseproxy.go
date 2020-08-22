@@ -11,30 +11,19 @@ import (
 	"github.com/saltbo/moreu/config"
 )
 
-type ReverseProxy struct {
-	router config.Router
-}
-
-func NewReverseProxy(router config.Router) *ReverseProxy {
-	return &ReverseProxy{
-		router: router,
-	}
-}
-
-func (rp *ReverseProxy) Register(router *gin.RouterGroup) {
-	u, err := url.Parse(rp.router.Upstream.Address)
+func ReverseProxy(router config.Router) gin.HandlerFunc {
+	u, err := url.Parse(router.Upstream.Address)
 	if err != nil {
 		log.Fatalf("[upstream] invalid address: %s", err)
 	}
 
 	header := http.Header{}
-	for k, v := range rp.router.Upstream.Headers {
+	for k, v := range router.Upstream.Headers {
 		header.Set(k, v)
 	}
 
 	upstream := httputil.NewReverseProxy(u, header)
-	rRouter := router.Group(rp.router.Pattern)
-	rRouter.Use(LoginAuth).Any("/*action", func(c *gin.Context) {
+	return func(c *gin.Context) {
 		upstream.ServeHTTP(c.Writer, c.Request)
-	})
+	}
 }

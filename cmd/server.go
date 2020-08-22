@@ -24,12 +24,14 @@ package cmd
 import (
 	"log"
 
+	"github.com/gin-gonic/gin"
 	"github.com/saltbo/gopkg/ginutil"
 	"github.com/saltbo/gopkg/gormutil"
 	"github.com/saltbo/gopkg/jwtutil"
 	"github.com/saltbo/gopkg/mailutil"
 	"github.com/spf13/cobra"
 
+	_ "github.com/saltbo/moreu/assets"
 	"github.com/saltbo/moreu/config"
 	"github.com/saltbo/moreu/model"
 	"github.com/saltbo/moreu/rest"
@@ -63,29 +65,47 @@ func serverRun() {
 	jwtutil.Init(conf.Secret)
 	mailutil.Init(conf.Email)
 	gormutil.Init(conf.Database, &model.User{}, &model.UserProfile{})
-
-	rs := ginutil.NewServer(":8081")
-	rs.SetupGroupRS("/moreu/api",
-		rest.NewUserResource(conf),
-		rest.NewTokenResource(conf),
-	)
-	rs.SetupStatic("/moreu", conf.Moreu)
-	rs.SetupIndex("/moreu", ginutil.NewIndex(conf.Moreu))
-	rs.SetupSwagger()
-	rs.SetupPing()
-
 	rest.RBACInit("roles.yml")
-	for _, router := range conf.Routers {
-		rs.SetupRS(rest.NewReverseProxy(router))
+
+	ge := gin.Default()
+	ginutil.SetupSwagger(ge)
+	ginutil.SetupPing(ge)
+
+	// system api
+	apiRouter := ge.Group("/moreu/api")
+	ginutil.SetupResource(apiRouter,
+		rest.NewTokenResource(conf),
+		rest.NewUserResource(conf),
+	)
+
+	// system front
+	sysRouter := ge.Group("/moreu")
+	if conf.Moreu != "" {
+		ginutil.SetupStaticAssets(sysRouter, conf.Moreu)
+	} else {
+		ginutil.SetupEmbedAssets(sysRouter, "/css", "/js", "/fonts")
 	}
 
+	// reverse proxy
+	simpleRouter := ginutil.NewSimpleRouter()
+	simpleRouter.StaticIndex("/moreu", conf.Moreu)
+	for _, router := range conf.Routers {
+		if router.Pattern == "/" {
+			simpleRouter.Route("/", rest.StaticAuth, rest.ReverseProxy(router))
+			continue
+		}
+
+		ge.Any(router.Pattern+"/*action", rest.LoginAuth, rest.ReverseProxy(router))
+	}
+
+	// static serve
 	for _, static := range conf.Statics {
-		rs.SetupStatic(static.Pattern, static.DistDir)
-		rs.SetupIndex(static.Pattern, ginutil.NewIndex(static.DistDir, rest.StaticAuth))
+		assetsRouter := ge.Group(static.Pattern)
+		ginutil.SetupStaticAssets(assetsRouter, static.DistDir)
+		simpleRouter.StaticIndex(static.Pattern, static.DistDir)
 	}
 
 	// server run
-	if err := rs.Run(); err != nil {
-		log.Fatalln(err)
-	}
+	ge.NoRoute(simpleRouter.Handler)
+	ginutil.Startup(ge, ":8081")
 }
