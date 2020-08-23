@@ -80,15 +80,16 @@ func serverRun() {
 
 	// system front
 	sysRouter := ge.Group("/moreu")
+	simpleRouter := ginutil.NewSimpleRouter()
 	if conf.Moreu != "" {
 		ginutil.SetupStaticAssets(sysRouter, conf.Moreu)
+		simpleRouter.StaticIndex("/moreu", conf.Moreu)
 	} else {
 		ginutil.SetupEmbedAssets(sysRouter, "/css", "/js", "/fonts")
+		simpleRouter.StaticFsIndex("/moreu", ginutil.EmbedFS())
 	}
 
 	// reverse proxy
-	simpleRouter := ginutil.NewSimpleRouter()
-	simpleRouter.StaticIndex("/moreu", conf.Moreu)
 	for _, router := range conf.Routers {
 		if router.Pattern == "/" {
 			simpleRouter.Route("/", rest.StaticAuth, rest.ReverseProxy(router))
