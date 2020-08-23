@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -37,45 +38,49 @@ func LoginAuth(c *gin.Context) {
 
 	rc, err := service.TokenVerify(token)
 	if err != nil {
-		ginutil.JSONUnauthorized(c, err)
+		tokenError(c, err)
+		return
+	}
+
+	state, err := defaultRBAC.IsRequestGranted(c.Request, rc.Roles)
+	if err != nil {
+		grantedError(c, err)
+		return
+	}
+
+	if !state.IsGranted() {
+		notGrantedError(c)
 		return
 	}
 
 	userIdSet(c, rc.Subject)
 	client.InjectUserId(c.Request, rc.Subject)
-	state, err := defaultRBAC.IsRequestGranted(c.Request, rc.Roles)
-	if err != nil {
-		ginutil.JSONServerError(c, err)
-		return
-	}
+}
 
-	if !state.IsGranted() {
-		ginutil.JSONForbidden(c, fmt.Errorf("access deny"))
-		return
+func tokenError(c *gin.Context, err error) {
+	accept := c.Request.Header.Get("Accept")
+	if strings.Contains(accept, gin.MIMEJSON) {
+		ginutil.JSONUnauthorized(c, err)
+	} else {
+		ginutil.FoundRedirect(c, service.Link2SignIn(c.Request.URL.RequestURI()))
 	}
 }
 
-func StaticAuth(c *gin.Context) {
-	token, err := tokenCookieGet(c)
-	if errors.Is(err, http.ErrNoCookie) {
-		token, _ = service.TokenCreate(0, 30, model.RoleGuest) // 未登录状态颁发一个匿名Token
-	}
-
-	rc, err := service.TokenVerify(token)
-	if err != nil {
-		ginutil.FoundRedirect(c, service.Link2SignIn(c.Request.URL.RequestURI()))
-		return
-	}
-
-	state, err := defaultRBAC.IsRequestGranted(c.Request, rc.Roles)
-	if err != nil {
+func grantedError(c *gin.Context, err error) {
+	accept := c.Request.Header.Get("Accept")
+	if strings.Contains(accept, gin.MIMEJSON) {
+		ginutil.JSONServerError(c, err)
+	} else {
 		ginutil.FoundRedirect(c, service.Link2ServerError(err))
-		return
 	}
+}
 
-	if !state.IsGranted() {
+func notGrantedError(c *gin.Context) {
+	accept := c.Request.Header.Get("Accept")
+	if strings.Contains(accept, gin.MIMEJSON) {
+		ginutil.JSONForbidden(c, fmt.Errorf("access deny"))
+	} else {
 		ginutil.FoundRedirect(c, service.Link2SignIn(c.Request.URL.RequestURI()))
-		return
 	}
 }
 

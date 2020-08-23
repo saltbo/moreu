@@ -9,12 +9,12 @@ email:
   password: mG077URe2Wh9
 
 database:
-  driver: sqlite3
-  dsn: moreu.db
+  driver: mysql
+  dsn: root:admin@(localhost:3306)/moreu?charset=utf8&parseTime=True&loc=Local
 
 #database:
-#  driver: mysql
-#  dsn: root:admin@(localhost:3306)/moreu?charset=utf8&parseTime=True&loc=Local
+#  driver: sqlite3
+#  dsn: moreu.db
 
 routers:
   - pattern: /

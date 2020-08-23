@@ -92,7 +92,7 @@ func serverRun() {
 	// reverse proxy
 	for _, router := range conf.Routers {
 		if router.Pattern == "/" {
-			simpleRouter.Route("/", rest.StaticAuth, rest.ReverseProxy(router))
+			simpleRouter.Route("/", rest.LoginAuth, rest.ReverseProxy(router))
 			continue
 		}
 
