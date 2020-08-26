@@ -4,7 +4,7 @@ import "time"
 
 type UserProfile struct {
 	Id       int64      `json:"id"`
-	UserId   int64      `json:"user_id" gorm:"not null"`
+	Ux       string     `json:"ux" gorm:"size:32;unique_index;not null"`
 	Nickname string     `json:"nickname" gorm:"size:32;not null"`
 	Avatar   string     `json:"avatar" gorm:"size:255;not null"`
 	Bio      string     `json:"bio" gorm:"size:255;not null"`

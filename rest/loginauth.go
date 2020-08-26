@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 
@@ -33,7 +32,7 @@ func RBACInit(name string) {
 func LoginAuth(c *gin.Context) {
 	token, err := tokenCookieGet(c)
 	if errors.Is(err, http.ErrNoCookie) {
-		token, _ = service.TokenCreate(0, 30, model.RoleGuest) // 未登录状态颁发一个匿名Token
+		token, _ = service.TokenCreate("guest", 30, model.RoleGuest) // 未登录状态颁发一个匿名Token
 	}
 
 	rc, err := service.TokenVerify(token)
@@ -53,7 +52,7 @@ func LoginAuth(c *gin.Context) {
 		return
 	}
 
-	userIdSet(c, rc.Subject)
+	uxSet(c, rc.Subject)
 	client.InjectUserId(c.Request, rc.Subject)
 }
 
@@ -86,18 +85,17 @@ func notGrantedError(c *gin.Context) {
 
 // auth k-v
 const (
-	ctxUserIdKey = "user_id"
+	ctxUxKey = "ctx-ux"
 
 	cookieTokenKey = "moreu-token"
 )
 
-func userIdSet(c *gin.Context, userId string) {
-	uid, _ := strconv.ParseInt(userId, 10, 64)
-	c.Set(ctxUserIdKey, uid)
+func uxSet(c *gin.Context, ux string) {
+	c.Set(ctxUxKey, ux)
 }
 
-func userIdGet(c *gin.Context) int64 {
-	return c.GetInt64(ctxUserIdKey)
+func uxGet(c *gin.Context) string {
+	return c.GetString(ctxUxKey)
 }
 
 func tokenCookieSet(c *gin.Context, token string, expireSec int) {

@@ -54,7 +54,7 @@ func (rs *TokenResource) create(c *gin.Context) {
 		}
 
 		expireSec := 7 * 24 * 3600
-		token, err := service.TokenCreate(user.ID, expireSec, user.RolesSplit()...)
+		token, err := service.TokenCreate(user.Ux, expireSec, user.RolesSplit()...)
 		if err != nil {
 			ginutil.JSONServerError(c, err)
 			return
@@ -72,7 +72,7 @@ func (rs *TokenResource) create(c *gin.Context) {
 	}
 
 	// issue a short-term token for password reset
-	token, err := service.TokenCreate(user.ID, 300)
+	token, err := service.TokenCreate(user.Ux, 300)
 	if err != nil {
 		ginutil.JSONServerError(c, err)
 		return

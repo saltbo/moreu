@@ -29,6 +29,7 @@ type Config struct {
 	Host     string          `yaml:"host"`
 	Moreu    string          `yaml:"moreu"`
 	Secret   string          `yaml:"secret"`
+	Invite   bool            `yaml:"invite"`
 	Email    mailutil.Config `yaml:"email"`
 	Database gormutil.Config `yaml:"database"`
 	Statics  Statics         `yaml:"statics"`

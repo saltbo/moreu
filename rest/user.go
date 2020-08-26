@@ -84,7 +84,7 @@ func (rs *UserResource) find(c *gin.Context) {
 		return
 	}
 
-	userProfile := &model.UserProfile{UserId: user.ID}
+	userProfile := &model.UserProfile{Ux: user.Ux}
 	if err := gormutil.DB().First(userProfile).Error; err != nil {
 		ginutil.JSONBadRequest(c, err)
 		return
@@ -105,13 +105,13 @@ func (rs *UserResource) find(c *gin.Context) {
 // @Failure 500 {object} httputil.JSONResponse
 // @Router /user [get]
 func (rs *UserResource) profile(c *gin.Context) {
-	user, err := service.UserGet(userIdGet(c))
+	user, err := service.UserGet(uxGet(c))
 	if err != nil {
 		ginutil.JSONServerError(c, err)
 		return
 	}
 
-	userProfile := &model.UserProfile{UserId: user.ID}
+	userProfile := &model.UserProfile{Ux: user.Ux}
 	if err := gormutil.DB().First(userProfile).Error; err != nil {
 		ginutil.JSONBadRequest(c, err)
 		return
@@ -138,14 +138,14 @@ func (rs *UserResource) update(c *gin.Context) {
 		return
 	}
 
-	user, err := service.UserGet(userIdGet(c))
+	user, err := service.UserGet(uxGet(c))
 	if err != nil {
 		ginutil.JSONServerError(c, err)
 		return
 	}
 
 	userProfile := new(model.UserProfile)
-	if err := gormutil.DB().Where("user_id=?", user.ID).First(userProfile).Error; err != nil {
+	if err := gormutil.DB().Where("ux=?", user.Ux).First(userProfile).Error; err != nil {
 		ginutil.JSONServerError(c, err)
 		return
 	}
@@ -182,13 +182,20 @@ func (rs *UserResource) create(c *gin.Context) {
 		return
 	}
 
-	user, err := service.UserCreate(p.Email, p.Password, model.RoleMember)
-	if err != nil {
+	us := service.NewUserSignUpService()
+	if rs.conf.Invite && p.Ticket == "" {
+		ginutil.JSONBadRequest(c, fmt.Errorf("ticket required"))
+		return
+	}
+
+	us.SetTicket(p.Ticket)
+	us.SetRoles(model.RoleMember)
+	if err := us.Signup(p.Email, p.Password); err != nil {
 		ginutil.JSONBadRequest(c, err)
 		return
 	}
 
-	token, err := service.TokenCreate(user.ID, 6*3600, user.RolesSplit()...)
+	token, err := service.TokenCreate(us.Ux(), 6*3600, us.Roles())
 	if err != nil {
 		ginutil.JSONServerError(c, err)
 		return

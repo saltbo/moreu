@@ -6,12 +6,13 @@ type QueryUser struct {
 }
 
 type BodyUser struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email    string `json:"email" binding:"required"`
+	Password string `json:"password" binding:"required"`
+	Ticket   string `json:"ticket"`
 }
 
 type BodyUserPatch struct {
-	Token     string `json:"token"`
+	Token     string `json:"token" binding:"required"`
 	Password  string `json:"password"`
 	Activated bool   `json:"activated"`
 }
