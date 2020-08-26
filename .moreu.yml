@@ -1,6 +1,7 @@
 host: http://inlets.saltbo.cn/
 #moreu: ../moreu-front/dist
 secret: 1111
+invite: true
 
 email:
   host: smtpdm.aliyun.com:25

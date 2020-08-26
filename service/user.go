@@ -22,7 +22,7 @@ func UserEmailExist(email string) (*model.User, bool) {
 
 func UserTicketExist(ticket string) (*model.User, bool) {
 	user := new(model.User)
-	if !gormutil.DB().Where("email = ?", ticket).First(user).RecordNotFound() {
+	if !gormutil.DB().Where("ticket = ?", ticket).First(user).RecordNotFound() {
 		return user, true
 	}
 

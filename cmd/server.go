@@ -64,7 +64,7 @@ func serverRun() {
 
 	jwtutil.Init(conf.Secret)
 	mailutil.Init(conf.Email)
-	gormutil.Init(conf.Database, &model.User{}, &model.UserProfile{})
+	gormutil.Init(conf.Database, &model.User{}, &model.UserProfile{}, &model.UserInvitation{})
 	rest.RBACInit("roles.yml")
 
 	ge := gin.Default()
