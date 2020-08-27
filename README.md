@@ -1,4 +1,6 @@
 # moreu
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fsaltbo%2Fmoreu.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fsaltbo%2Fmoreu?ref=badge_shield)
+
 
 [![](https://github.com/saltbo/moreu/workflows/build/badge.svg)](https://github.com/saltbo/moreu/actions?query=workflow%3Abuild)
 [![](https://codecov.io/gh/saltbo/moreu/branch/master/graph/badge.svg)](https://codecov.io/gh/saltbo/moreu)
@@ -31,3 +33,5 @@ See [CONTRIBUTING](CONTRIBUTING.md) for details on submitting patches and the co
 
 ## License
 - [MIT](https://github.com/saltbo/moreu/blob/master/LICENSE)
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fsaltbo%2Fmoreu.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fsaltbo%2Fmoreu?ref=badge_large)
