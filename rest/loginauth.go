@@ -53,7 +53,6 @@ func LoginAuth(c *gin.Context) {
 	}
 
 	uxSet(c, rc.Subject)
-	client.InjectUserId(c.Request, rc.Subject)
 }
 
 func tokenError(c *gin.Context, err error) {
@@ -92,6 +91,7 @@ const (
 
 func uxSet(c *gin.Context, ux string) {
 	c.Set(ctxUxKey, ux)
+	client.InjectUx(c.Request, ux)
 }
 
 func uxGet(c *gin.Context) string {

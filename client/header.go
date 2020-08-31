@@ -2,21 +2,18 @@ package client
 
 import (
 	"net/http"
-	"strconv"
 )
 
-const headerKeyUserId = "X-Moreu-Sub"
+const headerKeyUx = "X-Moreu-Ux"
 
 type Context interface {
 	GetHeader(key string) string
 }
 
-func InjectUserId(req *http.Request, subject string) {
-	req.Header.Set(headerKeyUserId, subject)
+func InjectUx(req *http.Request, subject string) {
+	req.Header.Set(headerKeyUx, subject)
 }
 
-func GetUserId(c Context) int64 {
-	sub := c.GetHeader(headerKeyUserId)
-	uid, _ := strconv.ParseInt(sub, 10, 64)
-	return uid
+func GetUx(c Context) string {
+	return c.GetHeader(headerKeyUx)
 }
