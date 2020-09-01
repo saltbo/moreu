@@ -20,20 +20,19 @@ import (
 	_ "github.com/saltbo/moreu/docs"
 )
 
-// @title Swagger Example API
+// @title Moreu API
 // @version 1.0
-// @description This is a sample server Petstore server.
-// @termsOfService http://swagger.io/terms/
+// @description This is a moreu server.
 
-// @contact.name API Support
-// @contact.url http://www.swagger.io/support
-// @contact.email support@swagger.io
+// @contact.name More Support
+// @contact.url https://saltbo.cn
+// @contact.email saltbo@foxmail.com
 
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
 // @host localhost:8080
-// @BasePath /ubase/api
+// @BasePath /moreu/api
 
 func main() {
 	cmd.Execute()

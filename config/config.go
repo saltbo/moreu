@@ -14,26 +14,21 @@ type (
 			Headers map[string]string `yaml:"headers"`
 		} `yaml:"upstream"`
 	}
-	Routers []Router
-)
-
-type (
 	Static struct {
 		Pattern string `yaml:"pattern"`
 		DistDir string `yaml:"distdir"`
 	}
-	Statics []Static
 )
 
 type Config struct {
-	Host     string          `yaml:"host"`
-	Moreu    string          `yaml:"moreu"`
-	Secret   string          `yaml:"secret"`
-	Invite   bool            `yaml:"invite"`
-	Email    mailutil.Config `yaml:"email"`
-	Database gormutil.Config `yaml:"database"`
-	Statics  Statics         `yaml:"statics"`
-	Routers  Routers         `yaml:"routers"`
+	Debug      bool            `yaml:"debug"`
+	Secret     string          `yaml:"secret"`
+	MoreuRoot  string          `yaml:"moreu_root"`
+	Invitation bool            `yaml:"invitation"`
+	Email      mailutil.Config `yaml:"email"`
+	Database   gormutil.Config `yaml:"database"`
+	Statics    []Static        `yaml:"statics"`
+	Routers    []Router        `yaml:"routers"`
 }
 
 func Parse() (*Config, error) {

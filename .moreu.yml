@@ -1,7 +1,7 @@
-host: http://inlets.saltbo.cn/
-#moreu: ../moreu-front/dist
-secret: 1111
-invite: true
+debug: false
+secret: 8A4N3MFhnxXb4SnrJhnRzDPYULRm66nt
+invitation: true
+#moreuRoot: / # 前端目录，如果定义则优先使用该目录下的前端文件，否则使用内置的前端页面
 
 email:
   host: smtpdm.aliyun.com:25
@@ -13,15 +13,7 @@ database:
   driver: mysql
   dsn: root:admin@(localhost:3306)/moreu?charset=utf8&parseTime=True&loc=Local
 
-#database:
-#  driver: sqlite3
-#  dsn: moreu.db
-
 routers:
   - pattern: /
     upstream:
       address: http://localhost:8222
-
-#statics:
-#  - pattern: /
-#    distDir: ../zpan-front/dist

@@ -183,7 +183,7 @@ func (rs *UserResource) create(c *gin.Context) {
 	}
 
 	us := service.NewUserSignUpService()
-	if rs.conf.Invite && p.Ticket == "" {
+	if rs.conf.Invitation && p.Ticket == "" {
 		ginutil.JSONBadRequest(c, fmt.Errorf("ticket required"))
 		return
 	}
@@ -201,7 +201,7 @@ func (rs *UserResource) create(c *gin.Context) {
 		return
 	}
 
-	activateLink := service.ActivateLink(rs.conf.Host, p.Email, token)
+	activateLink := service.ActivateLink(ginutil.GetOrigin(c), p.Email, token)
 	if err := service.SignupNotify(p.Email, activateLink); err != nil {
 		ginutil.JSONServerError(c, err)
 		return

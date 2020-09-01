@@ -82,9 +82,9 @@ func serverRun() {
 	// system front
 	sysRouter := ge.Group("/moreu")
 	simpleRouter := ginutil.NewSimpleRouter()
-	if conf.Moreu != "" {
-		ginutil.SetupStaticAssets(sysRouter, conf.Moreu)
-		simpleRouter.StaticIndex("/moreu", conf.Moreu)
+	if conf.MoreuRoot != "" {
+		ginutil.SetupStaticAssets(sysRouter, conf.MoreuRoot)
+		simpleRouter.StaticIndex("/moreu", conf.MoreuRoot)
 	} else {
 		ginutil.SetupEmbedAssets(sysRouter, "/css", "/js", "/fonts")
 		simpleRouter.StaticFsIndex("/moreu", ginutil.EmbedFS())
