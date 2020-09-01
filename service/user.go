@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/jinzhu/gorm"
@@ -11,18 +12,23 @@ import (
 	"github.com/saltbo/moreu/model"
 )
 
-func UserEmailExist(email string) (*model.User, bool) {
-	user := new(model.User)
-	if !gormutil.DB().Where("email = ?", email).First(user).RecordNotFound() {
-		return user, true
-	}
+var emailExp = regexp.MustCompile(`^[A-Za-z0-9]+([_\.][A-Za-z0-9]+)*@([A-Za-z0-9\-]+\.)+[A-Za-z]{2,6}$`)
 
-	return nil, false
+func UserEmailExist(email string) (*model.User, bool) {
+	return userExist("email", email)
+}
+
+func UsernameExist(username string) (*model.User, bool) {
+	return userExist("username", username)
 }
 
 func UserTicketExist(ticket string) (*model.User, bool) {
+	return userExist("ticket", ticket)
+}
+
+func userExist(k, v string) (*model.User, bool) {
 	user := new(model.User)
-	if !gormutil.DB().Where("ticket = ?", ticket).First(user).RecordNotFound() {
+	if !gormutil.DB().Where(k+"=?", v).First(user).RecordNotFound() {
 		return user, true
 	}
 
@@ -118,8 +124,13 @@ func UserGet(ux string) (*model.User, error) {
 	return user, nil
 }
 
-func UserSignIn(email, password string) (*model.User, error) {
-	user, exist := UserEmailExist(email)
+func UserSignIn(usernameOrEmail, password string) (*model.User, error) {
+	userFinder := UsernameExist
+	if emailExp.MatchString(usernameOrEmail) {
+		userFinder = UserEmailExist
+	}
+
+	user, exist := userFinder(usernameOrEmail)
 	if !exist {
 		return nil, fmt.Errorf("user not exist")
 	}
