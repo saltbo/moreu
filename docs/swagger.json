@@ -1,13 +1,12 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "This is a sample server Petstore server.",
-        "title": "Swagger Example API",
-        "termsOfService": "http://swagger.io/terms/",
+        "description": "This is a moreu server.",
+        "title": "Moreu API",
         "contact": {
-            "name": "API Support",
-            "url": "http://www.swagger.io/support",
-            "email": "support@swagger.io"
+            "name": "More Support",
+            "url": "https://saltbo.cn",
+            "email": "saltbo@foxmail.com"
         },
         "license": {
             "name": "Apache 2.0",
@@ -16,7 +15,7 @@
         "version": "1.0"
     },
     "host": "localhost:8080",
-    "basePath": "/ubase/api",
+    "basePath": "/moreu/api",
     "paths": {
         "/tokens": {
             "post": {
@@ -447,7 +446,8 @@
         "bind.BodyToken": {
             "type": "object",
             "required": [
-                "email"
+                "email",
+                "password"
             ],
             "properties": {
                 "captcha": {
@@ -463,17 +463,27 @@
         },
         "bind.BodyUser": {
             "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
             "properties": {
                 "email": {
                     "type": "string"
                 },
                 "password": {
                     "type": "string"
+                },
+                "ticket": {
+                    "type": "string"
                 }
             }
         },
         "bind.BodyUserPatch": {
             "type": "object",
+            "required": [
+                "token"
+            ],
             "properties": {
                 "activated": {
                     "type": "boolean"
@@ -527,9 +537,6 @@
                 "created": {
                     "type": "string"
                 },
-                "deleted": {
-                    "type": "string"
-                },
                 "email": {
                     "type": "string"
                 },
@@ -539,10 +546,17 @@
                 "roles": {
                     "type": "string"
                 },
+                "ticket": {
+                    "type": "string"
+                },
                 "updated": {
                     "type": "string"
                 },
                 "username": {
+                    "type": "string"
+                },
+                "ux": {
+                    "description": "Global unique user ID",
                     "type": "string"
                 }
             }
@@ -562,9 +576,6 @@
                 "created": {
                     "type": "string"
                 },
-                "deleted": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "integer"
                 },
@@ -580,8 +591,8 @@
                 "url": {
                     "type": "string"
                 },
-                "user_id": {
-                    "type": "integer"
+                "ux": {
+                    "type": "string"
                 }
             }
         }

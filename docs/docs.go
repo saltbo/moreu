@@ -18,11 +18,10 @@ var doc = `{
     "info": {
         "description": "{{.Description}}",
         "title": "{{.Title}}",
-        "termsOfService": "http://swagger.io/terms/",
         "contact": {
-            "name": "API Support",
-            "url": "http://www.swagger.io/support",
-            "email": "support@swagger.io"
+            "name": "More Support",
+            "url": "https://saltbo.cn",
+            "email": "saltbo@foxmail.com"
         },
         "license": {
             "name": "Apache 2.0",
@@ -462,7 +461,8 @@ var doc = `{
         "bind.BodyToken": {
             "type": "object",
             "required": [
-                "email"
+                "email",
+                "password"
             ],
             "properties": {
                 "captcha": {
@@ -478,17 +478,27 @@ var doc = `{
         },
         "bind.BodyUser": {
             "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
             "properties": {
                 "email": {
                     "type": "string"
                 },
                 "password": {
                     "type": "string"
+                },
+                "ticket": {
+                    "type": "string"
                 }
             }
         },
         "bind.BodyUserPatch": {
             "type": "object",
+            "required": [
+                "token"
+            ],
             "properties": {
                 "activated": {
                     "type": "boolean"
@@ -542,9 +552,6 @@ var doc = `{
                 "created": {
                     "type": "string"
                 },
-                "deleted": {
-                    "type": "string"
-                },
                 "email": {
                     "type": "string"
                 },
@@ -554,10 +561,17 @@ var doc = `{
                 "roles": {
                     "type": "string"
                 },
+                "ticket": {
+                    "type": "string"
+                },
                 "updated": {
                     "type": "string"
                 },
                 "username": {
+                    "type": "string"
+                },
+                "ux": {
+                    "description": "Global unique user ID",
                     "type": "string"
                 }
             }
@@ -577,9 +591,6 @@ var doc = `{
                 "created": {
                     "type": "string"
                 },
-                "deleted": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "integer"
                 },
@@ -595,8 +606,8 @@ var doc = `{
                 "url": {
                     "type": "string"
                 },
-                "user_id": {
-                    "type": "integer"
+                "ux": {
+                    "type": "string"
                 }
             }
         }
@@ -616,10 +627,10 @@ type swaggerInfo struct {
 var SwaggerInfo = swaggerInfo{
 	Version:     "1.0",
 	Host:        "localhost:8080",
-	BasePath:    "/ubase/api",
+	BasePath:    "/moreu/api",
 	Schemes:     []string{},
-	Title:       "Swagger Example API",
-	Description: "This is a sample server Petstore server.",
+	Title:       "Moreu API",
+	Description: "This is a moreu server.",
 }
 
 type s struct{}
