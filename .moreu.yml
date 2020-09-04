@@ -11,9 +11,4 @@ email:
 
 database:
   driver: mysql
-  dsn: root:admin@(localhost:3306)/moreu?charset=utf8&parseTime=True&loc=Local
-
-routers:
-  - pattern: /
-    upstream:
-      address: http://localhost:8222
+  dsn: root:admin@(localhost:3306)/zpan?charset=utf8&parseTime=True&loc=Local

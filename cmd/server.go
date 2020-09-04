@@ -19,24 +19,27 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-//go:generate statik -src=../../moreu-front/dist -dest .. -p assets
 package cmd
 
 import (
-	"log"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/saltbo/gopkg/ginutil"
 	"github.com/saltbo/gopkg/gormutil"
 	"github.com/saltbo/gopkg/jwtutil"
 	"github.com/saltbo/gopkg/mailutil"
+	"github.com/saltbo/gopkg/strutil"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
-	_ "github.com/saltbo/moreu/assets"
+	"github.com/saltbo/moreu/assets"
 	"github.com/saltbo/moreu/config"
 	"github.com/saltbo/moreu/model"
 	"github.com/saltbo/moreu/rest"
 )
+
+var conf = &config.Config{}
 
 // serverCmd represents the server command
 var serverCmd = &cobra.Command{
@@ -48,25 +51,46 @@ and usage of using your command. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		serverRun()
-	},
+	Run: Run,
 }
 
 func init() {
 	rootCmd.AddCommand(serverCmd)
+
+	serverCmd.Flags().BoolVar(&conf.Debug, "debug", false, "specify the driver of database")
+	serverCmd.Flags().StringVar(&conf.Secret, "secret", strutil.RandomText(6), "specify the driver of database")
+	serverCmd.Flags().BoolVar(&conf.Invitation, "invitation", false, "specify the driver of database")
+	serverCmd.Flags().StringVar(&conf.Database.Driver, "db-driver", "mysql", "specify the driver of database")
+	serverCmd.Flags().StringVar(&conf.Database.DSN, "db-dsn", "", "specify the dsn of database")
+	serverCmd.Flags().StringVar(&conf.Email.Host, "email-host", "", "specify the host of email")
+	serverCmd.Flags().StringVar(&conf.Email.Sender, "email-sender", "", "specify the sender of email")
+	serverCmd.Flags().StringVar(&conf.Email.Username, "email-username", "", "specify the username of email")
+	serverCmd.Flags().StringVar(&conf.Email.Password, "email-password", "", "specify the password of email")
+	serverCmd.Flags().StringVar(&conf.GRbacFile, "grbac-config", "roles.yml", "specify the filepath of grbac roles file")
+
+	serverCmd.Flags().String("proxy-config", "routers.yml", "specify the path of routers.yml")
+	viper.BindPFlag("proxy-config", serverCmd.Flags().Lookup("proxy-config"))
 }
 
-func serverRun() {
-	conf, err := config.Parse()
-	if err != nil {
-		log.Fatalf("conf: %v", err)
+func Run(cmd *cobra.Command, args []string) {
+	if cmd.Flags().NFlag() == 0 {
+		conf = config.Parse()
+	} else {
+		v := viper.New()
+		v.SetConfigFile(viper.GetString("proxy-config"))
+		v.ReadInConfig()
+		if err := v.Unmarshal(&conf); err == nil {
+			fmt.Println("Using proxy-config file:", v.ConfigFileUsed())
+		}
 	}
 
+	rest.RBACInit(conf.GRbacFile)
 	jwtutil.Init(conf.Secret)
 	mailutil.Init(conf.Email)
-	gormutil.Init(conf.Database, &model.User{}, &model.UserProfile{}, &model.UserInvitation{})
-	rest.RBACInit("roles.yml")
+
+	gormutil.Init(conf.Database, conf.Debug)
+	gormutil.SetupPrefix("mu_")
+	gormutil.AutoMigrate(model.Tables())
 
 	ge := gin.Default()
 	ginutil.SetupSwagger(ge)
@@ -86,8 +110,8 @@ func serverRun() {
 		ginutil.SetupStaticAssets(sysRouter, conf.MoreuRoot)
 		simpleRouter.StaticIndex("/moreu", conf.MoreuRoot)
 	} else {
-		ginutil.SetupEmbedAssets(sysRouter, "/css", "/js", "/fonts")
-		simpleRouter.StaticFsIndex("/moreu", ginutil.EmbedFS())
+		ginutil.SetupEmbedAssets(sysRouter, assets.EmbedFS(), "/css", "/js", "/fonts")
+		simpleRouter.StaticFsIndex("/moreu", assets.EmbedFS())
 	}
 
 	// reverse proxy

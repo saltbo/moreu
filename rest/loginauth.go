@@ -6,11 +6,11 @@ import (
 	"log"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/saltbo/gopkg/ginutil"
 	"github.com/storyicon/grbac"
+	"github.com/storyicon/grbac/pkg/meta"
 
 	"github.com/saltbo/moreu/client"
 	"github.com/saltbo/moreu/model"
@@ -19,9 +19,36 @@ import (
 
 var defaultRBAC *grbac.Controller
 
-func RBACInit(name string) {
-	roleLoader := grbac.WithYAML(name, time.Second)
-	rbac, err := grbac.New(roleLoader)
+var defaultRules = grbac.Rules{
+	{
+		Resource: &meta.Resource{
+			Host:   "*",
+			Path:   "*",
+			Method: "*",
+		},
+		Permission: &meta.Permission{
+			AuthorizedRoles: []string{"member"},
+		},
+	},
+	{
+		Resource: &meta.Resource{
+			Host:   "*",
+			Path:   "/moreu/api/users",
+			Method: "GET",
+		},
+		Permission: &meta.Permission{
+			AuthorizedRoles: []string{"admin"},
+		},
+	},
+}
+
+func RBACInit(roles string) {
+	var opts []grbac.ControllerOption
+	if roles != "" {
+		opts = append(opts, grbac.WithYAML(roles, -1))
+	}
+
+	rbac, err := grbac.New(grbac.WithRules(defaultRules), opts...)
 	if err != nil {
 		log.Fatalln(err)
 	}

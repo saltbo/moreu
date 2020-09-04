@@ -25,10 +25,6 @@ type User struct {
 	Updated   time.Time  `json:"updated" gorm:"column:updated_at;not null"`
 }
 
-func (User) TableName() string {
-	return "user"
-}
-
 func (u *User) RolesSplit() []string {
 	return strings.Split(u.Roles, ",")
 }

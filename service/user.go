@@ -2,17 +2,15 @@ package service
 
 import (
 	"fmt"
-	"regexp"
 	"strings"
 
 	"github.com/jinzhu/gorm"
 	"github.com/saltbo/gopkg/gormutil"
+	"github.com/saltbo/gopkg/regexputil"
 	"github.com/saltbo/gopkg/strutil"
 
 	"github.com/saltbo/moreu/model"
 )
-
-var emailExp = regexp.MustCompile(`^[A-Za-z0-9]+([_\.][A-Za-z0-9]+)*@([A-Za-z0-9\-]+\.)+[A-Za-z]{2,6}$`)
 
 func UserEmailExist(email string) (*model.User, bool) {
 	return userExist("email", email)
@@ -126,7 +124,7 @@ func UserGet(ux string) (*model.User, error) {
 
 func UserSignIn(usernameOrEmail, password string) (*model.User, error) {
 	userFinder := UsernameExist
-	if emailExp.MatchString(usernameOrEmail) {
+	if regexputil.EmailRegex.MatchString(usernameOrEmail) {
 		userFinder = UserEmailExist
 	}
 

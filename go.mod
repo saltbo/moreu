@@ -9,7 +9,7 @@ require (
 	github.com/jinzhu/gorm v1.9.16
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/rakyll/statik v0.1.7
-	github.com/saltbo/gopkg v0.0.0-20200827161817-a4f845cbc9b2
+	github.com/saltbo/gopkg v0.0.0-20200904134901-c742eaa26c10
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/viper v1.7.1
 	github.com/storyicon/grbac v0.0.0-20200224041032-a0461737df7e

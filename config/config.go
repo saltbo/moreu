@@ -1,6 +1,8 @@
 package config
 
 import (
+	"log"
+
 	"github.com/saltbo/gopkg/gormutil"
 	"github.com/saltbo/gopkg/mailutil"
 	"github.com/spf13/viper"
@@ -24,6 +26,7 @@ type Config struct {
 	Debug      bool            `yaml:"debug"`
 	Secret     string          `yaml:"secret"`
 	MoreuRoot  string          `yaml:"moreu_root"`
+	GRbacFile  string          `yaml:"grbac_file"`
 	Invitation bool            `yaml:"invitation"`
 	Email      mailutil.Config `yaml:"email"`
 	Database   gormutil.Config `yaml:"database"`
@@ -31,11 +34,11 @@ type Config struct {
 	Routers    []Router        `yaml:"routers"`
 }
 
-func Parse() (*Config, error) {
+func Parse() *Config {
 	conf := new(Config)
 	if err := viper.Unmarshal(conf); err != nil {
-		return nil, err
+		log.Fatalln(err)
 	}
 
-	return conf, nil
+	return conf
 }

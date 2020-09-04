@@ -1,6 +1,8 @@
 package model
 
-import "time"
+import (
+	"time"
+)
 
 type UserProfile struct {
 	Id       int64      `json:"id"`
@@ -14,8 +16,4 @@ type UserProfile struct {
 	Deleted  *time.Time `json:"-" gorm:"column:deleted_at"`
 	Created  time.Time  `json:"created" gorm:"column:created_at;not null"`
 	Updated  time.Time  `json:"updated" gorm:"column:updated_at;not null"`
-}
-
-func (UserProfile) TableName() string {
-	return "user_profile"
 }
