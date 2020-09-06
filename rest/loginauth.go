@@ -23,8 +23,8 @@ var defaultRules = grbac.Rules{
 	{
 		Resource: &meta.Resource{
 			Host:   "*",
-			Path:   "*",
-			Method: "*",
+			Path:   "**",
+			Method: "GET",
 		},
 		Permission: &meta.Permission{
 			AuthorizedRoles: []string{"member"},

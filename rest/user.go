@@ -111,8 +111,8 @@ func (rs *UserResource) profile(c *gin.Context) {
 		return
 	}
 
-	userProfile := &model.UserProfile{Ux: user.Ux}
-	if err := gormutil.DB().First(userProfile).Error; err != nil {
+	userProfile := new(model.UserProfile)
+	if err := gormutil.DB().First(userProfile, "ux=?", user.Ux).Error; err != nil {
 		ginutil.JSONBadRequest(c, err)
 		return
 	}
