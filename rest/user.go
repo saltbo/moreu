@@ -182,28 +182,20 @@ func (rs *UserResource) create(c *gin.Context) {
 		return
 	}
 
-	us := service.NewUserSignUpService()
 	if rs.conf.Invitation && p.Ticket == "" {
 		ginutil.JSONBadRequest(c, fmt.Errorf("ticket required"))
 		return
 	}
 
-	us.SetTicket(p.Ticket)
-	us.SetRoles(model.RoleMember)
-	if err := us.Signup(p.Email, p.Password); err != nil {
+	opt := service.NewUserCreateOption()
+	opt.Roles = model.RoleMember
+	opt.Ticket = p.Ticket
+	if rs.conf.EmailAct() {
+		opt.Origin = ginutil.GetOrigin(c)
+	}
+
+	if err := service.UserSignup(p.Email, p.Password, opt); err != nil {
 		ginutil.JSONBadRequest(c, err)
-		return
-	}
-
-	token, err := service.TokenCreate(us.Ux(), 6*3600, us.Roles())
-	if err != nil {
-		ginutil.JSONServerError(c, err)
-		return
-	}
-
-	activateLink := service.ActivateLink(ginutil.GetOrigin(c), p.Email, token)
-	if err := service.SignupNotify(p.Email, activateLink); err != nil {
-		ginutil.JSONServerError(c, err)
 		return
 	}
 

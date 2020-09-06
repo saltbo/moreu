@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/jinzhu/gorm"
@@ -33,30 +34,42 @@ func userExist(k, v string) (*model.User, bool) {
 	return nil, false
 }
 
-type UserSignUpService struct {
-	ux     string
-	roles  string
-	ticket string
+type UserCreateOption struct {
+	ux        string
+	Roles     string
+	Ticket    string
+	Origin    string
+	Activated bool
 }
 
-func NewUserSignUpService() *UserSignUpService {
-	return &UserSignUpService{
-		ux: strutil.RandomText(32),
+func NewUserCreateOption() UserCreateOption {
+	return UserCreateOption{ux: strutil.RandomText(32)}
+}
+
+func UserSignup(email, password string, opt UserCreateOption) error {
+	if err := UserCreate(email, password, opt); err != nil {
+		return err
+	} else if opt.Origin == "" {
+		return nil
 	}
+
+	token, err := TokenCreate(opt.ux, 6*3600, opt.Roles)
+	if err != nil {
+		return err
+	}
+
+	return SignupNotify(email, ActivateLink(opt.Origin, email, token))
 }
 
-func (s *UserSignUpService) SetTicket(ticket string) {
-	s.ticket = ticket
-}
+func UserCreate(email, password string, opt UserCreateOption) error {
+	_, exist := UserEmailExist(email)
+	if exist {
+		return fmt.Errorf("email already exist")
+	}
 
-func (s *UserSignUpService) SetRoles(roles ...string) {
-	s.roles = strings.Join(roles, ",")
-}
-
-func (s *UserSignUpService) Signup(email, password string) error {
 	var parentUser *model.User
-	if s.ticket != "" {
-		pu, exist := UserTicketExist(s.ticket)
+	if opt.Ticket != "" {
+		pu, exist := UserTicketExist(opt.Ticket)
 		if !exist {
 			return fmt.Errorf("ticket not exist")
 		}
@@ -64,20 +77,16 @@ func (s *UserSignUpService) Signup(email, password string) error {
 		parentUser = pu
 	}
 
-	_, exist := UserEmailExist(email)
-	if exist {
-		return fmt.Errorf("email already exist")
-	}
-
 	return gormutil.DB().Transaction(func(tx *gorm.DB) error {
 		// 创建基本信息
 		user := &model.User{
-			Ux:       s.ux,
-			Email:    email,
-			Username: fmt.Sprintf("mu%s", strutil.RandomText(18)),
-			Password: strutil.Md5Hex(password),
-			Roles:    s.roles,
-			Ticket:   strutil.RandomText(6),
+			Ux:        opt.ux,
+			Email:     email,
+			Username:  fmt.Sprintf("mu%s", strutil.RandomText(18)),
+			Password:  strutil.Md5Hex(password),
+			Roles:     opt.Roles,
+			Ticket:    strutil.RandomText(6),
+			Activated: opt.Activated,
 		}
 		if err := tx.Create(user).Error; err != nil {
 			return err
@@ -105,14 +114,6 @@ func (s *UserSignUpService) Signup(email, password string) error {
 	})
 }
 
-func (s *UserSignUpService) Ux() string {
-	return s.ux
-}
-
-func (s *UserSignUpService) Roles() string {
-	return s.roles
-}
-
 func UserGet(ux string) (*model.User, error) {
 	user := new(model.User)
 	if gormutil.DB().Where("ux=?", ux).First(user).RecordNotFound() {
@@ -120,6 +121,24 @@ func UserGet(ux string) (*model.User, error) {
 	}
 
 	return user, nil
+}
+
+func AdministratorInit() {
+	admin := "admin@moreu.io"
+	passwd := strutil.RandomText(8)
+	if _, exist := UserEmailExist(admin); exist {
+		return
+	}
+
+	opt := NewUserCreateOption()
+	opt.Roles = model.RoleAdmin
+	opt.Activated = true
+	if err := UserCreate(admin, passwd, opt); err != nil {
+		log.Fatalln("user init failed: %S", err)
+	}
+
+	log.Printf("AdminEmail: %s\n", admin)
+	log.Printf("AdminPassword: %s\n", passwd)
 }
 
 func UserSignIn(usernameOrEmail, password string) (*model.User, error) {
@@ -135,10 +154,6 @@ func UserSignIn(usernameOrEmail, password string) (*model.User, error) {
 
 	if user.Password != strutil.Md5Hex(password) {
 		return nil, fmt.Errorf("invalid password")
-	}
-
-	if !user.Activated {
-		return nil, fmt.Errorf("account is not activated")
 	}
 
 	return user, nil

@@ -37,6 +37,7 @@ import (
 	"github.com/saltbo/moreu/config"
 	"github.com/saltbo/moreu/model"
 	"github.com/saltbo/moreu/rest"
+	"github.com/saltbo/moreu/service"
 )
 
 var conf = &config.Config{}
@@ -86,11 +87,14 @@ func Run(cmd *cobra.Command, args []string) {
 
 	rest.RBACInit(conf.GRbacFile)
 	jwtutil.Init(conf.Secret)
-	mailutil.Init(conf.Email)
+	if conf.EmailAct() {
+		mailutil.Init(conf.Email)
+	}
 
 	gormutil.Init(conf.Database, conf.Debug)
 	gormutil.SetupPrefix("mu_")
 	gormutil.AutoMigrate(model.Tables())
+	service.AdministratorInit() // create the user administrator
 
 	ge := gin.Default()
 	ginutil.SetupSwagger(ge)

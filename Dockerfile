@@ -20,7 +20,7 @@ RUN echo \
     > /etc/apt/sources.list
 
 RUN apt-get update \
-    && apt-get install -y ca-certificates telnet procps
+    && apt-get install -y ca-certificates telnet procps curl
 
 ENV APP_HOME /moreu
 WORKDIR $APP_HOME

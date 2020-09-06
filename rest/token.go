@@ -51,6 +51,9 @@ func (rs *TokenResource) create(c *gin.Context) {
 		if err != nil {
 			ginutil.JSONBadRequest(c, err)
 			return
+		} else if rs.conf.Email.Host != "" && !user.Activated {
+			ginutil.JSONBadRequest(c, fmt.Errorf("account is not activated"))
+			return
 		}
 
 		expireSec := 7 * 24 * 3600
