@@ -25,12 +25,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/saltbo/gopkg/ginutil"
 	"github.com/saltbo/gopkg/gormutil"
-	"github.com/saltbo/gopkg/mailutil"
 	"github.com/spf13/cobra"
 
 	"github.com/saltbo/moreu/config"
 	"github.com/saltbo/moreu/moreu"
-	"github.com/saltbo/moreu/service"
 )
 
 var conf = &config.Config{}
@@ -55,16 +53,15 @@ func init() {
 func Run(cmd *cobra.Command, args []string) {
 	conf = config.Parse()
 	gormutil.Init(conf.Database, conf.Debug)
-	service.AdministratorInit() // create the user administrator
-	if conf.EmailAct() {
-		mailutil.Init(conf.Email)
-	}
 
 	ge := gin.Default()
 	ginutil.SetupPing(ge)
 	ginutil.SetupSwagger(ge)
 
 	mu := moreu.New(ge, gormutil.DB())
+	if conf.EmailAct() {
+		mu.SetupMail(conf.Email)
+	}
 	mu.SetupAPI(conf.EmailAct(), conf.Invitation)
 	if conf.MoreuRoot != "" {
 		mu.SetupStatic(conf.MoreuRoot)

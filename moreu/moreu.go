@@ -7,11 +7,13 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/saltbo/gopkg/ginutil"
 	"github.com/saltbo/gopkg/jwtutil"
+	"github.com/saltbo/gopkg/mailutil"
 	"github.com/storyicon/grbac"
 
 	"github.com/saltbo/moreu/assets"
 	"github.com/saltbo/moreu/model"
 	"github.com/saltbo/moreu/rest"
+	"github.com/saltbo/moreu/service"
 )
 
 type Engine struct {
@@ -22,10 +24,15 @@ type Engine struct {
 func New(r *gin.Engine, db *gorm.DB) *Engine {
 	jwtutil.Init("test123") // todo save me on the fisrt launch.
 	db.AutoMigrate(model.Tables()...)
+	service.AdministratorInit() // create the user administrator
 	return &Engine{
 		r:  r,
 		db: db,
 	}
+}
+
+func (e *Engine) SetupMail(conf mailutil.Config)  {
+	mailutil.Init(conf)
 }
 
 // system api
