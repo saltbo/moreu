@@ -1,7 +1,7 @@
 debug: false
 secret: 8A4N3xxxxxxxxxxxxxxm66nt
 invitation: false
-#moreuRoot: / # 前端目录，如果定义则优先使用该目录下的前端文件，否则使用内置的前端页面
+moreuRoot: ../moreu-front/dist # 前端目录，如果定义则优先使用该目录下的前端文件，否则使用内置的前端页面
 
 #email:
 #  host: smtpdm.aliyun.com:25

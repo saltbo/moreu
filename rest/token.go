@@ -7,18 +7,17 @@ import (
 	"github.com/saltbo/gopkg/ginutil"
 	_ "github.com/saltbo/gopkg/httputil"
 
-	"github.com/saltbo/moreu/config"
 	"github.com/saltbo/moreu/rest/bind"
 	"github.com/saltbo/moreu/service"
 )
 
 type TokenResource struct {
-	conf *config.Config
+	emailAct bool
 }
 
-func NewTokenResource(conf *config.Config) *TokenResource {
+func NewTokenResource(emailAct bool) *TokenResource {
 	return &TokenResource{
-		conf: conf,
+		emailAct: emailAct,
 	}
 }
 
@@ -51,7 +50,7 @@ func (rs *TokenResource) create(c *gin.Context) {
 		if err != nil {
 			ginutil.JSONBadRequest(c, err)
 			return
-		} else if rs.conf.Email.Host != "" && !user.Activated {
+		} else if rs.emailAct && !user.Activated {
 			ginutil.JSONBadRequest(c, fmt.Errorf("account is not activated"))
 			return
 		}

@@ -11,3 +11,7 @@ type UserInvitation struct {
 	Created time.Time `json:"created" gorm:"column:created_at;not null"`
 	Updated time.Time `json:"updated" gorm:"column:updated_at;not null"`
 }
+
+func (UserInvitation) TableName() string {
+	return "mu_user_invitation"
+}

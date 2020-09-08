@@ -22,22 +22,14 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/saltbo/gopkg/ginutil"
-	"github.com/saltbo/gopkg/gormutil"
-	"github.com/saltbo/gopkg/mailutil"
-	"github.com/spf13/cobra"
+	"fmt"
 
-	"github.com/saltbo/moreu/config"
-	"github.com/saltbo/moreu/moreu"
-	"github.com/saltbo/moreu/service"
+	"github.com/spf13/cobra"
 )
 
-var conf = &config.Config{}
-
-// serverCmd represents the server command
-var serverCmd = &cobra.Command{
-	Use:   "server",
+// proxyCmd represents the proxy command
+var proxyCmd = &cobra.Command{
+	Use:   "proxy",
 	Short: "A brief description of your command",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
@@ -45,33 +37,41 @@ and usage of using your command. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-	Run: Run,
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("proxy called")
+	},
 }
 
 func init() {
-	rootCmd.AddCommand(serverCmd)
+	rootCmd.AddCommand(proxyCmd)
+
+	// Here you will define your flags and configuration settings.
+
+	// Cobra supports Persistent Flags which will work for this command
+	// and all subcommands, e.g.:
+	// proxyCmd.PersistentFlags().String("foo", "", "A help for foo")
+
+	// Cobra supports local flags which will only run when this command
+	// is called directly, e.g.:
+	// proxyCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
-func Run(cmd *cobra.Command, args []string) {
-	conf = config.Parse()
-	gormutil.Init(conf.Database, conf.Debug)
-	service.AdministratorInit() // create the user administrator
-	if conf.EmailAct() {
-		mailutil.Init(conf.Email)
-	}
-
-	ge := gin.Default()
-	ginutil.SetupPing(ge)
-	ginutil.SetupSwagger(ge)
-
-	mu := moreu.New(ge, gormutil.DB())
-	mu.SetupAPI(conf.EmailAct(), conf.Invitation)
-	if conf.MoreuRoot != "" {
-		mu.SetupStatic(conf.MoreuRoot)
-	} else {
-		mu.SetupEmbedStatic()
-	}
-
-	ge.NoRoute(mu.NoRoute)
-	ginutil.Startup(ge, ":8081")
+func proxyRun() {
+	//// reverse proxy
+	//for _, router := range conf.Routers {
+	//	if router.Pattern == "/" {
+	//		simpleRouter.Route("/", rest.LoginAuth, rest.ReverseProxy(router))
+	//		continue
+	//	}
+	//
+	//	ge.Any(router.Pattern+"/*action", rest.LoginAuth, rest.ReverseProxy(router))
+	//}
+	//
+	//// static serve
+	//for _, static := range conf.Statics {
+	//	assetsRouter := ge.Group(static.Pattern)
+	//	ginutil.SetupStaticAssets(assetsRouter, static.DistDir)
+	//	simpleRouter.StaticIndex(static.Pattern, static.DistDir)
+	//	mu.SetupEmbedStatic()
+	//}
 }

@@ -10,76 +10,51 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/saltbo/gopkg/ginutil"
 	"github.com/storyicon/grbac"
-	"github.com/storyicon/grbac/pkg/meta"
 
 	"github.com/saltbo/moreu/client"
 	"github.com/saltbo/moreu/model"
 	"github.com/saltbo/moreu/service"
 )
 
-var defaultRBAC *grbac.Controller
-
-var defaultRules = grbac.Rules{
-	{
-		Resource: &meta.Resource{
-			Host:   "*",
-			Path:   "**",
-			Method: "GET",
-		},
-		Permission: &meta.Permission{
-			AuthorizedRoles: []string{"member"},
-		},
-	},
-	{
-		Resource: &meta.Resource{
-			Host:   "*",
-			Path:   "/moreu/api/users",
-			Method: "GET",
-		},
-		Permission: &meta.Permission{
-			AuthorizedRoles: []string{"admin"},
-		},
-	},
+func LoginAuth() gin.HandlerFunc {
+	return LoginAuthWithRoles(nil)
 }
 
-func RBACInit(roles string) {
-	var opts []grbac.ControllerOption
-	if roles != "" {
-		opts = append(opts, grbac.WithYAML(roles, -1))
+func LoginAuthWithRoles(roles grbac.Rules) gin.HandlerFunc {
+	if roles != nil {
+		defaultRules = append(defaultRules, roles...)
 	}
 
-	rbac, err := grbac.New(grbac.WithRules(defaultRules), opts...)
+	ctrl, err := grbac.New(grbac.WithRules(defaultRules))
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	defaultRBAC = rbac
-}
+	return func(c *gin.Context) {
+		token, err := tokenCookieGet(c)
+		if errors.Is(err, http.ErrNoCookie) {
+			token, _ = service.TokenCreate("guest", 30, model.RoleGuest) // 未登录状态颁发一个匿名Token
+		}
 
-func LoginAuth(c *gin.Context) {
-	token, err := tokenCookieGet(c)
-	if errors.Is(err, http.ErrNoCookie) {
-		token, _ = service.TokenCreate("guest", 30, model.RoleGuest) // 未登录状态颁发一个匿名Token
+		rc, err := service.TokenVerify(token)
+		if err != nil {
+			tokenError(c, err)
+			return
+		}
+
+		state, err := ctrl.IsRequestGranted(c.Request, rc.Roles)
+		if err != nil {
+			grantedError(c, err)
+			return
+		}
+
+		if !state.IsGranted() {
+			notGrantedError(c)
+			return
+		}
+
+		uxSet(c, rc.Subject)
 	}
-
-	rc, err := service.TokenVerify(token)
-	if err != nil {
-		tokenError(c, err)
-		return
-	}
-
-	state, err := defaultRBAC.IsRequestGranted(c.Request, rc.Roles)
-	if err != nil {
-		grantedError(c, err)
-		return
-	}
-
-	if !state.IsGranted() {
-		notGrantedError(c)
-		return
-	}
-
-	uxSet(c, rc.Subject)
 }
 
 func tokenError(c *gin.Context, err error) {

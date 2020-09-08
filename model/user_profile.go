@@ -17,3 +17,7 @@ type UserProfile struct {
 	Created  time.Time  `json:"created" gorm:"column:created_at;not null"`
 	Updated  time.Time  `json:"updated" gorm:"column:updated_at;not null"`
 }
+
+func (UserProfile) TableName() string {
+	return "mu_user_profile"
+}

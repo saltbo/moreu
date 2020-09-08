@@ -8,19 +8,20 @@ import (
 	"github.com/saltbo/gopkg/gormutil"
 	_ "github.com/saltbo/gopkg/httputil"
 
-	"github.com/saltbo/moreu/config"
 	"github.com/saltbo/moreu/model"
 	"github.com/saltbo/moreu/rest/bind"
 	"github.com/saltbo/moreu/service"
 )
 
 type UserResource struct {
-	conf *config.Config
+	emailAct   bool
+	invitation bool
 }
 
-func NewUserResource(conf *config.Config) *UserResource {
+func NewUserResource(emailAct, invitation bool) *UserResource {
 	return &UserResource{
-		conf: conf,
+		emailAct:   emailAct,
+		invitation: invitation,
 	}
 }
 
@@ -28,7 +29,7 @@ func (rs *UserResource) Register(router *gin.RouterGroup) {
 	router.POST("/users", rs.create)        // 账户注册
 	router.PATCH("/users/:email", rs.patch) // 账户激活、密码重置
 
-	router.Use(LoginAuth)
+	router.Use(LoginAuth())
 	router.GET("/users", rs.findAll)        // 查询用户列表，需管理员权限
 	router.GET("/users/:username", rs.find) // 查询某一个用户的公开信息
 
@@ -117,7 +118,10 @@ func (rs *UserResource) profile(c *gin.Context) {
 		return
 	}
 
-	ginutil.JSONData(c, userProfile)
+	ginutil.JSONData(c, gin.H{
+		"user":    user.Format(),
+		"profile": userProfile,
+	})
 }
 
 // update godoc
@@ -182,7 +186,7 @@ func (rs *UserResource) create(c *gin.Context) {
 		return
 	}
 
-	if rs.conf.Invitation && p.Ticket == "" {
+	if rs.invitation && p.Ticket == "" {
 		ginutil.JSONBadRequest(c, fmt.Errorf("ticket required"))
 		return
 	}
@@ -190,7 +194,7 @@ func (rs *UserResource) create(c *gin.Context) {
 	opt := service.NewUserCreateOption()
 	opt.Roles = model.RoleMember
 	opt.Ticket = p.Ticket
-	if rs.conf.EmailAct() {
+	if rs.emailAct {
 		opt.Origin = ginutil.GetOrigin(c)
 	}
 
