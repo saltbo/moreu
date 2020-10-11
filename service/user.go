@@ -108,6 +108,9 @@ func UserCreate(email, password string, opt UserCreateOption) error {
 			Roles:    opt.Roles,
 			Ticket:   strutil.RandomText(6),
 		}
+		if opt.Activated {
+			user.Status = model.StatusActivated
+		}
 		if err := tx.Create(user).Error; err != nil {
 			return err
 		}
