@@ -14,12 +14,16 @@ import (
 )
 
 type UserResource struct {
+	us *service.User
+
 	emailAct   bool
 	invitation bool
 }
 
 func NewUserResource(emailAct, invitation bool) *UserResource {
 	return &UserResource{
+		us: service.NewUser(),
+
 		emailAct:   emailAct,
 		invitation: invitation,
 	}
@@ -44,7 +48,7 @@ func (rs *UserResource) Register(router *gin.RouterGroup) {
 // @Accept json
 // @Produce json
 // @Param query query bind.QueryUser true "参数"
-// @Success 200 {object} httputil.JSONResponse{data=gin.H{list=[]model.UserProfile},total=int64}
+// @Success 200 {object} httputil.JSONResponse{data=gin.H{list=[]model.UserFormats},total=int64}
 // @Failure 400 {object} httputil.JSONResponse
 // @Failure 500 {object} httputil.JSONResponse
 // @Router /users [get]
@@ -55,14 +59,11 @@ func (rs *UserResource) findAll(c *gin.Context) {
 		return
 	}
 
-	list := make([]model.UserProfile, 0)
-	if err := gormutil.DB().Offset(p.Offset).Limit(p.Limit).Find(&list).Error; err != nil {
-		ginutil.JSONBadRequest(c, err)
+	list, total, err := rs.us.FindAll(p.Offset, p.Limit)
+	if err != nil {
+		ginutil.JSONServerError(c, err)
 		return
 	}
-
-	var total int64
-	gormutil.DB().Model(model.UserProfile{}).Count(&total)
 
 	ginutil.JSONList(c, list, total)
 }

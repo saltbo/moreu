@@ -66,7 +66,7 @@ definitions:
         type: string
       id:
         type: integer
-      roles:
+      role:
         type: string
       ticket:
         type: string
@@ -76,6 +76,35 @@ definitions:
         type: string
       ux:
         description: Global unique user ID
+        type: string
+    type: object
+  model.UserFormats:
+    properties:
+      avatar:
+        type: string
+      bio:
+        type: string
+      company:
+        type: string
+      created:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      location:
+        type: string
+      nickname:
+        type: string
+      role:
+        type: string
+      updated:
+        type: string
+      url:
+        type: string
+      username:
+        type: string
+      ux:
         type: string
     type: object
   model.UserProfile:
@@ -230,7 +259,7 @@ paths:
                   - properties:
                       list:
                         items:
-                          $ref: '#/definitions/model.UserProfile'
+                          $ref: '#/definitions/model.UserFormats'
                         type: array
                     type: object
                 total:

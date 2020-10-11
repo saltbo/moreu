@@ -219,7 +219,7 @@ var doc = `{
                                                         "list": {
                                                             "type": "array",
                                                             "items": {
-                                                                "$ref": "#/definitions/model.UserProfile"
+                                                                "$ref": "#/definitions/model.UserFormats"
                                                             }
                                                         }
                                                     }
@@ -558,7 +558,7 @@ var doc = `{
                 "id": {
                     "type": "integer"
                 },
-                "roles": {
+                "role": {
                     "type": "string"
                 },
                 "ticket": {
@@ -572,6 +572,50 @@ var doc = `{
                 },
                 "ux": {
                     "description": "Global unique user ID",
+                    "type": "string"
+                }
+            }
+        },
+        "model.UserFormats": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "bio": {
+                    "type": "string"
+                },
+                "company": {
+                    "type": "string"
+                },
+                "created": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "updated": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                },
+                "ux": {
                     "type": "string"
                 }
             }

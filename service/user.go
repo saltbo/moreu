@@ -13,6 +13,27 @@ import (
 	"github.com/saltbo/moreu/model"
 )
 
+type User struct {
+}
+
+func NewUser() *User {
+	return &User{}
+}
+
+func (u *User) FindAll(offset, limit int) (list []model.UserFormats, total int64, err error) {
+	ut := model.User{}.TableName()
+	pt := model.UserProfile{}.TableName()
+	query := fmt.Sprintf("left join %s on %s.ux = %s.ux", pt, pt, ut)
+	sn := gormutil.DB().Table(ut)
+	sn.Count(&total)
+	//sn = sn.Order("id desc")
+	err = sn.Offset(offset).Limit(limit).Select("*").Joins(query).Find(&list).Error
+	for idx, item := range list {
+		list[idx] = *item.Format()
+	}
+	return
+}
+
 func UserEmailExist(email string) (*model.User, bool) {
 	return userExist("email", email)
 }

@@ -44,3 +44,18 @@ func (u *User) Format() *User {
 	u.RoleName = roles[u.Roles]
 	return u
 }
+
+type UserFormats struct {
+	Id       int64  `json:"id"`
+	Ux       string `json:"ux" gorm:"size:32;unique_index;not null"` // Global unique user ID
+	Email    string `json:"email" gorm:"size:32;unique_index;not null"`
+	Username string `json:"username" gorm:"size:20;unique_index;not null"`
+	Roles    string `json:"-" gorm:"size:64;not null"`
+	RoleName string `json:"role" gorm:"-"`
+	UserProfile
+}
+
+func (u *UserFormats) Format() *UserFormats {
+	u.RoleName = roles[u.Roles]
+	return u
+}
