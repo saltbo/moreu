@@ -3,11 +3,11 @@
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Activated** | **bool** |  | [optional] [default to null]
 **Created** | **string** |  | [optional] [default to null]
 **Email** | **string** |  | [optional] [default to null]
 **Id** | **int32** |  | [optional] [default to null]
 **Role** | **string** |  | [optional] [default to null]
+**Status** | **string** |  | [optional] [default to null]
 **Ticket** | **string** |  | [optional] [default to null]
 **Updated** | **string** |  | [optional] [default to null]
 **Username** | **string** |  | [optional] [default to null]

@@ -101,13 +101,12 @@ func UserCreate(email, password string, opt UserCreateOption) error {
 	return gormutil.DB().Transaction(func(tx *gorm.DB) error {
 		// 创建基本信息
 		user := &model.User{
-			Ux:        opt.ux,
-			Email:     email,
-			Username:  fmt.Sprintf("mu%s", strutil.RandomText(18)),
-			Password:  strutil.Md5Hex(password),
-			Roles:     opt.Roles,
-			Ticket:    strutil.RandomText(6),
-			Activated: opt.Activated,
+			Ux:       opt.ux,
+			Email:    email,
+			Username: fmt.Sprintf("mu%s", strutil.RandomText(18)),
+			Password: strutil.Md5Hex(password),
+			Roles:    opt.Roles,
+			Ticket:   strutil.RandomText(6),
 		}
 		if err := tx.Create(user).Error; err != nil {
 			return err
@@ -186,7 +185,7 @@ func UserActivate(ux string) error {
 		return err
 	}
 
-	if err := gormutil.DB().Model(user).Update("activated", true).Error; err != nil {
+	if err := gormutil.DB().Model(user).Update("status", model.StatusActivated).Error; err != nil {
 		return err
 	}
 

@@ -58,8 +58,6 @@ definitions:
     type: object
   model.User:
     properties:
-      activated:
-        type: boolean
       created:
         type: string
       email:
@@ -67,6 +65,8 @@ definitions:
       id:
         type: integer
       role:
+        type: string
+      status:
         type: string
       ticket:
         type: string
@@ -97,6 +97,8 @@ definitions:
       nickname:
         type: string
       role:
+        type: string
+      status:
         type: string
       updated:
         type: string

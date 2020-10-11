@@ -531,9 +531,6 @@
         "model.User": {
             "type": "object",
             "properties": {
-                "activated": {
-                    "type": "boolean"
-                },
                 "created": {
                     "type": "string"
                 },
@@ -544,6 +541,9 @@
                     "type": "integer"
                 },
                 "role": {
+                    "type": "string"
+                },
+                "status": {
                     "type": "string"
                 },
                 "ticket": {
@@ -589,6 +589,9 @@
                     "type": "string"
                 },
                 "role": {
+                    "type": "string"
+                },
+                "status": {
                     "type": "string"
                 },
                 "updated": {

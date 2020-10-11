@@ -10,11 +10,11 @@
 package client
 
 type ModelUser struct {
-	Activated bool `json:"activated,omitempty"`
 	Created string `json:"created,omitempty"`
 	Email string `json:"email,omitempty"`
 	Id int32 `json:"id,omitempty"`
 	Role string `json:"role,omitempty"`
+	Status string `json:"status,omitempty"`
 	Ticket string `json:"ticket,omitempty"`
 	Updated string `json:"updated,omitempty"`
 	Username string `json:"username,omitempty"`

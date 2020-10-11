@@ -50,7 +50,7 @@ func (rs *TokenResource) create(c *gin.Context) {
 		if err != nil {
 			ginutil.JSONBadRequest(c, err)
 			return
-		} else if rs.emailAct && !user.Activated {
+		} else if rs.emailAct && !user.Activated() {
 			ginutil.JSONBadRequest(c, fmt.Errorf("account is not activated"))
 			return
 		}

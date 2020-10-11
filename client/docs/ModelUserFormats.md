@@ -12,6 +12,7 @@ Name | Type | Description | Notes
 **Location** | **string** |  | [optional] [default to null]
 **Nickname** | **string** |  | [optional] [default to null]
 **Role** | **string** |  | [optional] [default to null]
+**Status** | **string** |  | [optional] [default to null]
 **Updated** | **string** |  | [optional] [default to null]
 **Url** | **string** |  | [optional] [default to null]
 **Username** | **string** |  | [optional] [default to null]

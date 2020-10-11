@@ -19,6 +19,7 @@ type ModelUserFormats struct {
 	Location string `json:"location,omitempty"`
 	Nickname string `json:"nickname,omitempty"`
 	Role string `json:"role,omitempty"`
+	Status string `json:"status,omitempty"`
 	Updated string `json:"updated,omitempty"`
 	Url string `json:"url,omitempty"`
 	Username string `json:"username,omitempty"`

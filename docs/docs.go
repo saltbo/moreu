@@ -546,9 +546,6 @@ var doc = `{
         "model.User": {
             "type": "object",
             "properties": {
-                "activated": {
-                    "type": "boolean"
-                },
                 "created": {
                     "type": "string"
                 },
@@ -559,6 +556,9 @@ var doc = `{
                     "type": "integer"
                 },
                 "role": {
+                    "type": "string"
+                },
+                "status": {
                     "type": "string"
                 },
                 "ticket": {
@@ -604,6 +604,9 @@ var doc = `{
                     "type": "string"
                 },
                 "role": {
+                    "type": "string"
+                },
+                "status": {
                     "type": "string"
                 },
                 "updated": {

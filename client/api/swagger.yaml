@@ -358,8 +358,6 @@ components:
     model.User:
       type: object
       properties:
-        activated:
-          type: boolean
         created:
           type: string
         email:
@@ -367,6 +365,8 @@ components:
         id:
           type: integer
         role:
+          type: string
+        status:
           type: string
         ticket:
           type: string
@@ -385,7 +385,7 @@ components:
         id: 0
         updated: updated
         email: email
-        activated: true
+        status: status
         username: username
     model.UserFormats:
       type: object
@@ -407,6 +407,8 @@ components:
         nickname:
           type: string
         role:
+          type: string
+        status:
           type: string
         updated:
           type: string
@@ -513,7 +515,7 @@ components:
           id: 0
           updated: updated
           email: email
-          activated: true
+          status: status
           username: username
         httputil.JSONResponse:
           msg: msg
