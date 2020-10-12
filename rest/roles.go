@@ -19,7 +19,7 @@ var defaultRules = grbac.Rules{
 	{
 		Resource: &meta.Resource{
 			Host:   "*",
-			Path:   "/moreu/api/users",
+			Path:   "/api/moreu/users",
 			Method: "GET",
 		},
 		Permission: &meta.Permission{
