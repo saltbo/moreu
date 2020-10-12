@@ -59,7 +59,7 @@ func (rs *UserResource) findAll(c *gin.Context) {
 		return
 	}
 
-	list, total, err := rs.us.FindAll(p.Offset, p.Limit)
+	list, total, err := rs.us.FindAll(p.Email, p.Offset, p.Limit)
 	if err != nil {
 		ginutil.JSONServerError(c, err)
 		return

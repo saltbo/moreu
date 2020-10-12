@@ -244,15 +244,15 @@ UsersApiService 用户列表
 获取用户列表信息
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param optional nil or *UsersApiUsersGetOpts - Optional Parameters:
+     * @param "Email" (optional.String) - 
      * @param "Limit" (optional.Int32) - 
-     * @param "Name" (optional.String) - 
      * @param "Offset" (optional.Int32) - 
 @return InlineResponse2001
 */
 
 type UsersApiUsersGetOpts struct { 
+	Email optional.String
 	Limit optional.Int32
-	Name optional.String
 	Offset optional.Int32
 }
 
@@ -272,11 +272,11 @@ func (a *UsersApiService) UsersGet(ctx context.Context, localVarOptionals *Users
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
 
+	if localVarOptionals != nil && localVarOptionals.Email.IsSet() {
+		localVarQueryParams.Add("email", parameterToString(localVarOptionals.Email.Value(), ""))
+	}
 	if localVarOptionals != nil && localVarOptionals.Limit.IsSet() {
 		localVarQueryParams.Add("limit", parameterToString(localVarOptionals.Limit.Value(), ""))
-	}
-	if localVarOptionals != nil && localVarOptionals.Name.IsSet() {
-		localVarQueryParams.Add("name", parameterToString(localVarOptionals.Name.Value(), ""))
 	}
 	if localVarOptionals != nil && localVarOptionals.Offset.IsSet() {
 		localVarQueryParams.Add("offset", parameterToString(localVarOptionals.Offset.Value(), ""))

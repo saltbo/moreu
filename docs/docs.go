@@ -182,13 +182,13 @@ var doc = `{
                 "summary": "用户列表",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "name": "limit",
+                        "type": "string",
+                        "name": "email",
                         "in": "query"
                     },
                     {
-                        "type": "string",
-                        "name": "name",
+                        "type": "integer",
+                        "name": "limit",
                         "in": "query"
                     },
                     {
@@ -514,11 +514,11 @@ var doc = `{
         "bind.QueryUser": {
             "type": "object",
             "properties": {
+                "email": {
+                    "type": "string"
+                },
                 "limit": {
                     "type": "integer"
-                },
-                "name": {
-                    "type": "string"
                 },
                 "offset": {
                     "type": "integer"

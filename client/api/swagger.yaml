@@ -111,6 +111,13 @@ paths:
       summary: 用户列表
       description: 获取用户列表信息
       parameters:
+      - name: email
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
       - name: limit
         in: query
         required: false
@@ -118,13 +125,6 @@ paths:
         explode: true
         schema:
           type: integer
-      - name: name
-        in: query
-        required: false
-        style: form
-        explode: true
-        schema:
-          type: string
       - name: offset
         in: query
         required: false
@@ -332,10 +332,10 @@ components:
     bind.QueryUser:
       type: object
       properties:
+        email:
+          type: string
         limit:
           type: integer
-        name:
-          type: string
         offset:
           type: integer
     gin.H:

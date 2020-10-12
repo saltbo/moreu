@@ -10,7 +10,7 @@
 package client
 
 type BindQueryUser struct {
+	Email string `json:"email,omitempty"`
 	Limit int32 `json:"limit,omitempty"`
-	Name string `json:"name,omitempty"`
 	Offset int32 `json:"offset,omitempty"`
 }

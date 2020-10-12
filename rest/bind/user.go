@@ -2,7 +2,7 @@ package bind
 
 type QueryUser struct {
 	QueryPage
-	Name string `form:"name"`
+	Email string `form:"email"`
 }
 
 type BodyUser struct {

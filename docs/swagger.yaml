@@ -37,10 +37,10 @@ definitions:
     type: object
   bind.QueryUser:
     properties:
+      email:
+        type: string
       limit:
         type: integer
-      name:
-        type: string
       offset:
         type: integer
     type: object
@@ -238,11 +238,11 @@ paths:
       description: 获取用户列表信息
       parameters:
       - in: query
+        name: email
+        type: string
+      - in: query
         name: limit
         type: integer
-      - in: query
-        name: name
-        type: string
       - in: query
         name: offset
         type: integer

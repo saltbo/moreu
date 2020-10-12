@@ -85,8 +85,8 @@ Name | Type | Description  | Notes
 Optional parameters are passed through a pointer to a UsersApiUsersGetOpts struct
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
+ **email** | **optional.String**|  | 
  **limit** | **optional.Int32**|  | 
- **name** | **optional.String**|  | 
  **offset** | **optional.Int32**|  | 
 
 ### Return type
