@@ -63,6 +63,7 @@ func (rs *TokenResource) create(c *gin.Context) {
 		}
 
 		tokenCookieSet(c, token, expireSec)
+		ginutil.Cookie(c, cookieRoleKey, user.Roles, expireSec)
 		ginutil.JSON(c)
 		return
 	}
@@ -100,6 +101,7 @@ func (rs *TokenResource) create(c *gin.Context) {
 // @Failure 500 {object} httputil.JSONResponse
 // @Router /tokens [delete]
 func (rs *TokenResource) delete(c *gin.Context) {
-	tokenCookieClean(c)
+	ginutil.Cookie(c, cookieTokenKey, "", 1)
+	ginutil.Cookie(c, cookieRoleKey, "", 1)
 	return
 }

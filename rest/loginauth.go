@@ -89,6 +89,7 @@ const (
 	ctxUxKey = "ctx-ux"
 
 	cookieTokenKey = "moreu-token"
+	cookieRoleKey  = "moreu-role"
 )
 
 func uxSet(c *gin.Context, ux string) {
@@ -106,8 +107,4 @@ func tokenCookieSet(c *gin.Context, token string, expireSec int) {
 
 func tokenCookieGet(c *gin.Context) (string, error) {
 	return c.Cookie(cookieTokenKey)
-}
-
-func tokenCookieClean(c *gin.Context) {
-	ginutil.Cookie(c, cookieTokenKey, "", 1)
 }
