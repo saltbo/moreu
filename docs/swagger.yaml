@@ -263,9 +263,9 @@ paths:
                         items:
                           $ref: '#/definitions/model.UserFormats'
                         type: array
+                      total:
+                        type: integer
                     type: object
-                total:
-                  type: integer
               type: object
         "400":
           description: Bad Request

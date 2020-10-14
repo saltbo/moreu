@@ -48,7 +48,7 @@ func (rs *UserResource) Register(router *gin.RouterGroup) {
 // @Accept json
 // @Produce json
 // @Param query query bind.QueryUser true "参数"
-// @Success 200 {object} httputil.JSONResponse{data=gin.H{list=[]model.UserFormats},total=int64}
+// @Success 200 {object} httputil.JSONResponse{data=gin.H{list=[]model.UserFormats,total=int64}}
 // @Failure 400 {object} httputil.JSONResponse
 // @Failure 500 {object} httputil.JSONResponse
 // @Router /users [get]

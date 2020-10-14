@@ -488,12 +488,11 @@ components:
                 type: array
                 items:
                   $ref: '#/definitions/model.UserFormats'
+              total:
+                type: integer
         httputil.JSONResponse:
           $ref: '#/components/schemas/httputil.JSONResponse'
-        total:
-          type: integer
       example:
-        total: 0
         data: ""
         httputil.JSONResponse:
           msg: msg

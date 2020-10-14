@@ -24,7 +24,10 @@ func (u *User) FindAll(email string, offset, limit int) (list []model.UserFormat
 	ut := model.User{}.TableName()
 	pt := model.UserProfile{}.TableName()
 	query := fmt.Sprintf("left join %s on %s.ux = %s.ux", pt, pt, ut)
-	sn := gormutil.DB().Table(ut).Where("email like ?", fmt.Sprintf("%%%s%%", email))
+	sn := gormutil.DB().Table(ut)
+	if email != "" {
+		sn = sn.Where("email like ?", fmt.Sprintf("%%%s%%", email))
+	}
 	sn.Count(&total)
 	//sn = sn.Order("id desc")
 	err = sn.Offset(offset).Limit(limit).Select("*").Joins(query).Find(&list).Error

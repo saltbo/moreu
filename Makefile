@@ -23,6 +23,10 @@ coverage-html: ## show coverage by the html
 generate:
 	go generate ./...
 
+swagger:
+	swag init
+	swagger-codegen generate -i docs/swagger.json -l go -o client -DpackageName=client
+
 build: mod ## Build the binary file
 	@go build -v -o build/bin/$(PROJECT) $(MAINFILE)
 

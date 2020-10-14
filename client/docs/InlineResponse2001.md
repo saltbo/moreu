@@ -5,7 +5,6 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Data** | [***AllOfinlineResponse2001Data**](AllOfinlineResponse2001Data.md) |  | [optional] [default to null]
 **HttputilJSONResponse** | [***HttputilJsonResponse**](httputil.JSONResponse.md) |  | [optional] [default to null]
-**Total** | **int32** |  | [optional] [default to null]
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

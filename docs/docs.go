@@ -221,13 +221,13 @@ var doc = `{
                                                             "items": {
                                                                 "$ref": "#/definitions/model.UserFormats"
                                                             }
+                                                        },
+                                                        "total": {
+                                                            "type": "integer"
                                                         }
                                                     }
                                                 }
                                             ]
-                                        },
-                                        "total": {
-                                            "type": "integer"
                                         }
                                     }
                                 }

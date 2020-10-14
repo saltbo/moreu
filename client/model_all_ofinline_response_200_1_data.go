@@ -11,4 +11,5 @@ package client
 
 type AllOfinlineResponse2001Data struct {
 	List []ModelUserFormats `json:"list,omitempty"`
+	Total int32 `json:"total,omitempty"`
 }

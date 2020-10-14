@@ -12,5 +12,4 @@ package client
 type InlineResponse2001 struct {
 	Data *AllOfinlineResponse2001Data `json:"data,omitempty"`
 	HttputilJSONResponse *HttputilJsonResponse `json:"httputil.JSONResponse,omitempty"`
-	Total int32 `json:"total,omitempty"`
 }
