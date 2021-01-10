@@ -1,6 +1,6 @@
 # {{classname}}
 
-All URIs are relative to *//localhost:8081/api*
+All URIs are relative to */api*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -133,7 +133,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **UsersUsernameGet**
-> InlineResponse200 UsersUsernameGet(ctx, username)
+> InlineResponse2003 UsersUsernameGet(ctx, username)
 用户查询
 
 获取一个用户的公开信息
@@ -147,7 +147,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**InlineResponse200**](inline_response_200.md)
+[**InlineResponse2003**](inline_response_200_3.md)
 
 ### Authorization
 

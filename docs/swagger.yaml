@@ -132,7 +132,6 @@ definitions:
       ux:
         type: string
     type: object
-host: localhost:8081
 info:
   contact:
     email: saltbo@foxmail.com
@@ -143,7 +142,7 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   title: Moreu API
-  version: "1.0"
+  version: 1.0.0
 paths:
   /configs/{key}:
     delete:
@@ -310,7 +309,14 @@ paths:
             - $ref: '#/definitions/httputil.JSONResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/model.UserProfile'
+                  allOf:
+                  - $ref: '#/definitions/gin.H'
+                  - properties:
+                      profile:
+                        $ref: '#/definitions/model.UserProfile'
+                      user:
+                        $ref: '#/definitions/model.User'
+                    type: object
               type: object
         "400":
           description: Bad Request

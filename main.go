@@ -21,7 +21,7 @@ import (
 )
 
 // @title Moreu API
-// @version 1.0
+// @version 1.0.0
 // @description This is a moreu server.
 
 // @contact.name More Support
@@ -31,7 +31,6 @@ import (
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host localhost:8081
 // @BasePath /api
 
 func main() {

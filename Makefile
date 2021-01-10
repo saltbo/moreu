@@ -27,10 +27,10 @@ swag:
 	swag init --exclude client
 
 client: swag
-	swagger-codegen generate -i docs/swagger.json -l go -o client -DpackageName=client
+	swagger-codegen generate -i docs/swagger.json -l go -DpackageName=client -o client
 
 jssdk: swag
-	swagger-codegen generate -i docs/swagger.json -l javascript -o ../moreu-jssdk
+	swagger-codegen generate -i docs/swagger.json -l javascript -DprojectName=moreu-jssdk --additional-properties usePromises=true,useES6=true -o ../moreu-jssdk
 
 build: mod ## Build the binary file
 	@go build -v -o build/bin/$(PROJECT) $(MAINFILE)

@@ -12,9 +12,8 @@
             "name": "Apache 2.0",
             "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
         },
-        "version": "1.0"
+        "version": "1.0.0"
     },
-    "host": "localhost:8081",
     "basePath": "/api",
     "paths": {
         "/configs/{key}": {
@@ -268,7 +267,22 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/model.UserProfile"
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/definitions/gin.H"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "profile": {
+                                                            "$ref": "#/definitions/model.UserProfile"
+                                                        },
+                                                        "user": {
+                                                            "$ref": "#/definitions/model.User"
+                                                        }
+                                                    }
+                                                }
+                                            ]
                                         }
                                     }
                                 }

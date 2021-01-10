@@ -22,13 +22,16 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"log"
 	"strings"
 
+	"github.com/fsnotify/fsnotify"
 	"github.com/gin-gonic/gin"
 	"github.com/saltbo/gopkg/ginutil"
 	"github.com/saltbo/gopkg/gormutil"
 	"github.com/saltbo/gopkg/jwtutil"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	"github.com/saltbo/moreu/api/server"
 	"github.com/saltbo/moreu/assets"
@@ -56,16 +59,18 @@ func init() {
 }
 
 func serverRun() {
-	conf := config.Parse()
-	gormutil.Init(conf.Database, conf.Debug)
-
 	ge := gin.Default()
 	ginutil.SetupPing(ge)
 	ginutil.SetupSwagger(ge)
-
 	jwtutil.Init("test123") // todo save me on the fisrt launch.
-	gormutil.Init(conf.Database, true)
-	gormutil.AutoMigrate(model.Tables())
+
+	conf := config.Parse()
+	viper.WatchConfig()
+	viper.OnConfigChange(func(in fsnotify.Event) {
+		log.Println(in, in.Name, in.String())
+		gormutil.Init(conf.Database, true)
+		gormutil.AutoMigrate(model.Tables())
+	})
 
 	apiRouter := ge.Group("/api")
 	ginutil.SetupResource(apiRouter,

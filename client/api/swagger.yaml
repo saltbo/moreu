@@ -9,67 +9,10 @@ info:
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: "1.0"
+  version: 1.0.0
 servers:
-- url: //localhost:8081/api
+- url: /api
 paths:
-  /configs:
-    get:
-      tags:
-      - Configs
-      summary: 获取全部配置
-      description: 获取全部配置
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/httputil.JSONResponse'
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/httputil.JSONResponse'
-        "500":
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/httputil.JSONResponse'
-    post:
-      tags:
-      - Configs
-      summary: 创建配置项
-      description: 创建配置项
-      requestBody:
-        description: 参数
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/bind.BodyConfig'
-        required: true
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/httputil.JSONResponse'
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/httputil.JSONResponse'
-        "500":
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/httputil.JSONResponse'
-      x-codegen-request-body-name: body
   /configs/{key}:
     get:
       tags:
@@ -104,6 +47,47 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/httputil.JSONResponse'
+    put:
+      tags:
+      - Configs
+      summary: 修改配置项
+      description: 根据键名修改配置项
+      parameters:
+      - name: key
+        in: path
+        description: 键名
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: 参数
+        content:
+          application/json:
+            schema:
+              type: object
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/httputil.JSONResponse'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/httputil.JSONResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/httputil.JSONResponse'
+      x-codegen-request-body-name: body
     delete:
       tags:
       - Configs
@@ -370,7 +354,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200'
+                $ref: '#/components/schemas/inline_response_200_3'
         "400":
           description: Bad Request
           content:
@@ -418,13 +402,6 @@ paths:
                 $ref: '#/components/schemas/httputil.JSONResponse'
 components:
   schemas:
-    bind.BodyConfig:
-      type: object
-      properties:
-        key:
-          type: string
-        value:
-          type: string
     bind.BodyToken:
       required:
       - email
@@ -587,21 +564,19 @@ components:
       type: object
       properties:
         data:
-          $ref: '#/components/schemas/model.UserProfile'
+          type: object
+          allOf:
+          - $ref: '#/components/schemas/gin.H'
+          - type: object
+            properties:
+              profile:
+                $ref: '#/definitions/model.UserProfile'
+              user:
+                $ref: '#/definitions/model.User'
         httputil.JSONResponse:
           $ref: '#/components/schemas/httputil.JSONResponse'
       example:
-        data:
-          ux: ux
-          created: created
-          nickname: nickname
-          bio: bio
-          company: company
-          location: location
-          avatar: avatar
-          id: 0
-          updated: updated
-          url: url
+        data: ""
         httputil.JSONResponse:
           msg: msg
           code: 0
@@ -647,6 +622,29 @@ components:
           email: email
           status: status
           username: username
+        httputil.JSONResponse:
+          msg: msg
+          code: 0
+          data: {}
+    inline_response_200_3:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/model.UserProfile'
+        httputil.JSONResponse:
+          $ref: '#/components/schemas/httputil.JSONResponse'
+      example:
+        data:
+          ux: ux
+          created: created
+          nickname: nickname
+          bio: bio
+          company: company
+          location: location
+          avatar: avatar
+          id: 0
+          updated: updated
+          url: url
         httputil.JSONResponse:
           msg: msg
           code: 0

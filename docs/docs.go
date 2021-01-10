@@ -283,7 +283,22 @@ var doc = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/model.UserProfile"
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/definitions/gin.H"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "profile": {
+                                                            "$ref": "#/definitions/model.UserProfile"
+                                                        },
+                                                        "user": {
+                                                            "$ref": "#/definitions/model.User"
+                                                        }
+                                                    }
+                                                }
+                                            ]
                                         }
                                     }
                                 }
@@ -810,8 +825,8 @@ type swaggerInfo struct {
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
-	Version:     "1.0",
-	Host:        "localhost:8081",
+	Version:     "1.0.0",
+	Host:        "",
 	BasePath:    "/api",
 	Schemes:     []string{},
 	Title:       "Moreu API",

@@ -103,7 +103,7 @@ func (rs *UserResource) find(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param username path string true "用户名"
-// @Success 200 {object} httputil.JSONResponse{data=model.UserProfile}
+// @Success 200 {object} httputil.JSONResponse{data=gin.H{user=model.User,profile=model.UserProfile}}
 // @Failure 400 {object} httputil.JSONResponse
 // @Failure 500 {object} httputil.JSONResponse
 // @Router /user [get]

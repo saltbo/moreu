@@ -9,8 +9,7 @@
  */
 package client
 
-type BindBodyUserPatch struct {
-	Activated bool `json:"activated,omitempty"`
-	Password string `json:"password,omitempty"`
-	Token string `json:"token"`
+type InlineResponse2003 struct {
+	Data *ModelUserProfile `json:"data,omitempty"`
+	HttputilJSONResponse *HttputilJsonResponse `json:"httputil.JSONResponse,omitempty"`
 }

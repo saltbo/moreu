@@ -9,8 +9,7 @@
  */
 package client
 
-type BindBodyUserPatch struct {
-	Activated bool `json:"activated,omitempty"`
-	Password string `json:"password,omitempty"`
-	Token string `json:"token"`
+type AllOfinlineResponse200Data struct {
+	Profile *ModelUserProfile `json:"profile,omitempty"`
+	User    *ModelUser        `json:"user,omitempty"`
 }

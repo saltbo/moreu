@@ -57,7 +57,7 @@ func (rs *ConfigResource) find(c *gin.Context) {
 // @Router /configs/{key} [put]
 func (rs *ConfigResource) update(c *gin.Context) {
 	p := make(map[string]interface{}, 0)
-	if err := c.ShouldBind(p); err != nil {
+	if err := c.ShouldBind(&p); err != nil {
 		ginutil.JSONBadRequest(c, err)
 		return
 	}
