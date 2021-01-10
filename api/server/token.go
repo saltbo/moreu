@@ -1,4 +1,4 @@
-package rest
+package server
 
 import (
 	"fmt"
@@ -7,7 +7,8 @@ import (
 	"github.com/saltbo/gopkg/ginutil"
 	_ "github.com/saltbo/gopkg/httputil"
 
-	"github.com/saltbo/moreu/rest/bind"
+	"github.com/saltbo/moreu/api/bind"
+	"github.com/saltbo/moreu/internel/app/middleware"
 	"github.com/saltbo/moreu/service"
 )
 
@@ -62,8 +63,8 @@ func (rs *TokenResource) create(c *gin.Context) {
 			return
 		}
 
-		tokenCookieSet(c, token, expireSec)
-		ginutil.Cookie(c, cookieRoleKey, user.Roles, expireSec)
+		middleware.TokenCookieSet(c, token, expireSec)
+		middleware.RoleCookieSet(c, user.Roles, expireSec)
 		ginutil.JSON(c)
 		return
 	}
@@ -101,7 +102,7 @@ func (rs *TokenResource) create(c *gin.Context) {
 // @Failure 500 {object} httputil.JSONResponse
 // @Router /tokens [delete]
 func (rs *TokenResource) delete(c *gin.Context) {
-	ginutil.Cookie(c, cookieTokenKey, "", 1)
-	ginutil.Cookie(c, cookieRoleKey, "", 1)
+	middleware.TokenCookieSet(c, "", 1)
+	middleware.RoleCookieSet(c, "", 1)
 	return
 }

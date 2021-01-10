@@ -11,8 +11,132 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   version: "1.0"
 servers:
-- url: //localhost:8080/moreu/api
+- url: //localhost:8081/api
 paths:
+  /configs:
+    get:
+      tags:
+      - Configs
+      summary: 获取全部配置
+      description: 获取全部配置
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/httputil.JSONResponse'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/httputil.JSONResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/httputil.JSONResponse'
+    post:
+      tags:
+      - Configs
+      summary: 创建配置项
+      description: 创建配置项
+      requestBody:
+        description: 参数
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bind.BodyConfig'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/httputil.JSONResponse'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/httputil.JSONResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/httputil.JSONResponse'
+      x-codegen-request-body-name: body
+  /configs/{key}:
+    get:
+      tags:
+      - Configs
+      summary: 获取配置项
+      description: 根据键名获取配置项
+      parameters:
+      - name: key
+        in: path
+        description: 键名
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/httputil.JSONResponse'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/httputil.JSONResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/httputil.JSONResponse'
+    delete:
+      tags:
+      - Configs
+      summary: 删除配置项
+      description: 根据键名删除配置项
+      parameters:
+      - name: key
+        in: path
+        description: 键名
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/httputil.JSONResponse'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/httputil.JSONResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/httputil.JSONResponse'
   /tokens:
     post:
       tags:
@@ -294,6 +418,13 @@ paths:
                 $ref: '#/components/schemas/httputil.JSONResponse'
 components:
   schemas:
+    bind.BodyConfig:
+      type: object
+      properties:
+        key:
+          type: string
+        value:
+          type: string
     bind.BodyToken:
       required:
       - email

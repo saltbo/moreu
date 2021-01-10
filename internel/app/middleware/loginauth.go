@@ -1,4 +1,4 @@
-package rest
+package middleware
 
 import (
 	"errors"
@@ -31,7 +31,7 @@ func LoginAuthWithRoles(roles grbac.Rules) gin.HandlerFunc {
 	}
 
 	return func(c *gin.Context) {
-		token, err := tokenCookieGet(c)
+		token, err := TokenCookieGet(c)
 		if errors.Is(err, http.ErrNoCookie) {
 			token, _ = service.TokenCreate("guest", 30, model.RoleGuest) // 未登录状态颁发一个匿名Token
 		}
@@ -53,7 +53,7 @@ func LoginAuthWithRoles(roles grbac.Rules) gin.HandlerFunc {
 			return
 		}
 
-		uxSet(c, rc.Subject)
+		UxSet(c, rc.Subject)
 	}
 }
 
@@ -92,19 +92,27 @@ const (
 	cookieRoleKey  = "moreu-role"
 )
 
-func uxSet(c *gin.Context, ux string) {
+func UxSet(c *gin.Context, ux string) {
 	c.Set(ctxUxKey, ux)
 	client.InjectUx(c.Request, ux)
 }
 
-func uxGet(c *gin.Context) string {
+func UxGet(c *gin.Context) string {
 	return c.GetString(ctxUxKey)
 }
 
-func tokenCookieSet(c *gin.Context, token string, expireSec int) {
+func TokenCookieSet(c *gin.Context, token string, expireSec int) {
 	c.SetCookie(cookieTokenKey, token, expireSec, "/", "", false, true)
 }
 
-func tokenCookieGet(c *gin.Context) (string, error) {
+func TokenCookieGet(c *gin.Context) (string, error) {
 	return c.Cookie(cookieTokenKey)
+}
+
+func RoleCookieSet(c *gin.Context, token string, expireSec int) {
+	c.SetCookie(cookieRoleKey, token, expireSec, "/", "", false, true)
+}
+
+func roleCookieGet(c *gin.Context) (string, error) {
+	return c.Cookie(cookieRoleKey)
 }

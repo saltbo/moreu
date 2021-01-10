@@ -1,4 +1,4 @@
-package rest
+package middleware
 
 import (
 	"github.com/storyicon/grbac"
@@ -14,6 +14,16 @@ var defaultRules = grbac.Rules{
 		},
 		Permission: &meta.Permission{
 			AuthorizedRoles: []string{"admin", "member"},
+		},
+	},
+	{
+		Resource: &meta.Resource{
+			Host:   "*",
+			Path:   "/api/moreu/tokens",
+			Method: "POST",
+		},
+		Permission: &meta.Permission{
+			AllowAnyone: true,
 		},
 	},
 	{

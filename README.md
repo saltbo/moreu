@@ -9,25 +9,38 @@
 
 English | [🇨🇳中文](https://saltbo.cn/moreu)
 
+## Features
+
+- 安装系统：引导用户进行安装
+- 配置系统：帮助开发者进行配置管理
+- 用户系统：提供注册登录，个人配置等功能
+
 ## Endpoints
+
 <!-- markdown-swagger -->
- Endpoint            | Method | Auth? | Description               
+
+Endpoint            | Method | Auth? | Description
  ------------------- | ------ | ----- | --------------------------
- `/tokens`           | POST   | No    | 用于账户登录和申请密码重置
- `/users`            | GET    | No    | 获取一个用户信息          
- `/users`            | POST   | No    | 注册一个用户              
- `/users/{email}`    | PATCH  | No    | 用于账户激活和密码重置    
- `/users/{username}` | GET    | No    | 获取一个用户信息          
+`/tokens`           | POST   | No    | 用于账户登录和申请密码重置
+`/users`            | GET    | No    | 获取一个用户信息
+`/users`            | POST   | No    | 注册一个用户
+`/users/{email}`    | PATCH  | No    | 用于账户激活和密码重置
+`/users/{username}` | GET    | No    | 获取一个用户信息
+
 <!-- /markdown-swagger -->
 
 ## Contributing
+
 See [CONTRIBUTING](CONTRIBUTING.md) for details on submitting patches and the contribution workflow.
 
 ## Contact us
+
 - [Author Blog](https://saltbo.cn).
 
 ## Author
+
 - [saltbo](https://github.com/saltbo)
 
 ## License
+
 - [MIT](https://github.com/saltbo/moreu/blob/master/LICENSE)

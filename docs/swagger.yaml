@@ -1,5 +1,9 @@
-basePath: /moreu/api
+basePath: /api
 definitions:
+  bind.BodyConfig:
+    items:
+      $ref: '#/definitions/bind.config'
+    type: array
   bind.BodyToken:
     properties:
       captcha:
@@ -43,6 +47,13 @@ definitions:
         type: integer
       offset:
         type: integer
+    type: object
+  bind.config:
+    properties:
+      key:
+        type: string
+      value:
+        type: string
     type: object
   gin.H:
     additionalProperties: true
@@ -132,7 +143,7 @@ definitions:
       ux:
         type: string
     type: object
-host: localhost:8080
+host: localhost:8081
 info:
   contact:
     email: saltbo@foxmail.com
@@ -145,6 +156,97 @@ info:
   title: Moreu API
   version: "1.0"
 paths:
+  /configs/{key}:
+    delete:
+      consumes:
+      - application/json
+      description: 根据键名删除配置项
+      parameters:
+      - description: 键名
+        in: path
+        name: key
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httputil.JSONResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.JSONResponse'
+      summary: 删除配置项
+      tags:
+      - Configs
+    get:
+      consumes:
+      - application/json
+      description: 根据键名获取配置项
+      parameters:
+      - description: 键名
+        in: path
+        name: key
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httputil.JSONResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.JSONResponse'
+      summary: 获取配置项
+      tags:
+      - Configs
+    put:
+      consumes:
+      - application/json
+      description: 根据键名修改配置项
+      parameters:
+      - description: 键名
+        in: path
+        name: key
+        required: true
+        type: string
+      - description: 参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/bind.BodyConfig'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httputil.JSONResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.JSONResponse'
+      summary: 修改配置项
+      tags:
+      - Configs
   /tokens:
     delete:
       consumes:

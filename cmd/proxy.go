@@ -24,7 +24,14 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/gin-gonic/gin"
+	"github.com/saltbo/gopkg/ginutil"
+	"github.com/saltbo/gopkg/jwtutil"
 	"github.com/spf13/cobra"
+
+	"github.com/saltbo/moreu/api/proxy"
+	"github.com/saltbo/moreu/config"
+	server2 "github.com/saltbo/moreu/internel/app/middleware"
 )
 
 // proxyCmd represents the proxy command
@@ -39,6 +46,7 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("proxy called")
+		proxyRun()
 	},
 }
 
@@ -57,21 +65,28 @@ func init() {
 }
 
 func proxyRun() {
-	//// reverse proxy
-	//for _, router := range conf.Routers {
-	//	if router.Pattern == "/" {
-	//		simpleRouter.Route("/", rest.LoginAuth, rest.ReverseProxy(router))
-	//		continue
-	//	}
-	//
-	//	ge.Any(router.Pattern+"/*action", rest.LoginAuth, rest.ReverseProxy(router))
-	//}
-	//
-	//// static serve
-	//for _, static := range conf.Statics {
-	//	assetsRouter := ge.Group(static.Pattern)
-	//	ginutil.SetupStaticAssets(assetsRouter, static.DistDir)
-	//	simpleRouter.StaticIndex(static.Pattern, static.DistDir)
-	//	mu.SetupEmbedStatic()
-	//}
+	ge := gin.Default()
+	ginutil.SetupPing(ge)
+	jwtutil.Init("test123") // todo save me on the fisrt launch.
+
+	// reverse proxy
+	conf := config.Parse()
+	for _, router := range conf.Routers {
+		if router.Pattern == "/" {
+			ge.NoRoute(server2.LoginAuth(), proxy.ReverseProxy(router))
+			continue
+		}
+
+		ge.Any(router.Pattern+"/*action", server2.LoginAuth(), proxy.ReverseProxy(router))
+	}
+
+	// static serve
+	for _, static := range conf.Statics {
+		assetsRouter := ge.Group(static.Pattern)
+		ginutil.SetupStaticAssets(assetsRouter, static.DistDir)
+		//simpleRouter.StaticIndex(static.Pattern, static.DistDir)
+		//mu.SetupEmbedStatic()
+	}
+
+	ginutil.Startup(ge, ":8082")
 }

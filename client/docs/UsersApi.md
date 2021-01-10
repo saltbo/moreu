@@ -1,6 +1,6 @@
 # {{classname}}
 
-All URIs are relative to *//localhost:8080/moreu/api*
+All URIs are relative to *//localhost:8081/api*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------

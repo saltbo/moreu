@@ -32,6 +32,143 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/configs/{key}": {
+            "get": {
+                "description": "根据键名获取配置项",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Configs"
+                ],
+                "summary": "获取配置项",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "键名",
+                        "name": "key",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.JSONResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.JSONResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.JSONResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "根据键名修改配置项",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Configs"
+                ],
+                "summary": "修改配置项",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "键名",
+                        "name": "key",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/bind.BodyConfig"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.JSONResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.JSONResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.JSONResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "根据键名删除配置项",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Configs"
+                ],
+                "summary": "删除配置项",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "键名",
+                        "name": "key",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.JSONResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.JSONResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.JSONResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/tokens": {
             "post": {
                 "description": "用于账户登录和申请密码重置",
@@ -458,6 +595,12 @@ var doc = `{
         }
     },
     "definitions": {
+        "bind.BodyConfig": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/bind.config"
+            }
+        },
         "bind.BodyToken": {
             "type": "object",
             "required": [
@@ -522,6 +665,17 @@ var doc = `{
                 },
                 "offset": {
                     "type": "integer"
+                }
+            }
+        },
+        "bind.config": {
+            "type": "object",
+            "properties": {
+                "key": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
                 }
             }
         },
@@ -673,8 +827,8 @@ type swaggerInfo struct {
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
 	Version:     "1.0",
-	Host:        "localhost:8080",
-	BasePath:    "/moreu/api",
+	Host:        "localhost:8081",
+	BasePath:    "/api",
 	Schemes:     []string{},
 	Title:       "Moreu API",
 	Description: "This is a moreu server.",

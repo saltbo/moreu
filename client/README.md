@@ -18,10 +18,14 @@ import "./client"
 
 ## Documentation for API Endpoints
 
-All URIs are relative to *//localhost:8080/moreu/api*
+All URIs are relative to *//localhost:8081/api*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
+*ConfigsApi* | [**ConfigsGet**](docs/ConfigsApi.md#configsget) | **Get** /configs | 获取全部配置
+*ConfigsApi* | [**ConfigsKeyDelete**](docs/ConfigsApi.md#configskeydelete) | **Delete** /configs/{key} | 删除配置项
+*ConfigsApi* | [**ConfigsKeyGet**](docs/ConfigsApi.md#configskeyget) | **Get** /configs/{key} | 获取配置项
+*ConfigsApi* | [**ConfigsPost**](docs/ConfigsApi.md#configspost) | **Post** /configs | 创建配置项
 *TokensApi* | [**TokensDelete**](docs/TokensApi.md#tokensdelete) | **Delete** /tokens | 退出登录
 *TokensApi* | [**TokensPost**](docs/TokensApi.md#tokenspost) | **Post** /tokens | 登录/密码重置
 *UsersApi* | [**UserGet**](docs/UsersApi.md#userget) | **Get** /user | 当前登录用户信息
@@ -34,6 +38,7 @@ Class | Method | HTTP request | Description
 ## Documentation For Models
 
  - [AllOfinlineResponse2001Data](docs/AllOfinlineResponse2001Data.md)
+ - [BindBodyConfig](docs/BindBodyConfig.md)
  - [BindBodyToken](docs/BindBodyToken.md)
  - [BindBodyUser](docs/BindBodyUser.md)
  - [BindBodyUserPatch](docs/BindBodyUserPatch.md)

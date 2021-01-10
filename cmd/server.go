@@ -22,18 +22,21 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"strings"
+
 	"github.com/gin-gonic/gin"
 	"github.com/saltbo/gopkg/ginutil"
 	"github.com/saltbo/gopkg/gormutil"
+	"github.com/saltbo/gopkg/jwtutil"
 	"github.com/spf13/cobra"
 
+	"github.com/saltbo/moreu/api/server"
+	"github.com/saltbo/moreu/assets"
 	"github.com/saltbo/moreu/config"
-	"github.com/saltbo/moreu/moreu"
+	"github.com/saltbo/moreu/model"
 )
 
-var conf = &config.Config{}
-
-// serverCmd represents the server command
+// serverCmd represents the middleware command
 var serverCmd = &cobra.Command{
 	Use:   "server",
 	Short: "A brief description of your command",
@@ -43,32 +46,46 @@ and usage of using your command. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-	Run: Run,
+	Run: func(cmd *cobra.Command, args []string) {
+		serverRun()
+	},
 }
 
 func init() {
 	rootCmd.AddCommand(serverCmd)
 }
 
-func Run(cmd *cobra.Command, args []string) {
-	conf = config.Parse()
+func serverRun() {
+	conf := config.Parse()
 	gormutil.Init(conf.Database, conf.Debug)
 
 	ge := gin.Default()
 	ginutil.SetupPing(ge)
 	ginutil.SetupSwagger(ge)
 
-	mu := moreu.New(ge, gormutil.DB())
-	if conf.EmailAct() {
-		mu.SetupMail(conf.Email)
-	}
-	mu.SetupAPI(conf.EmailAct(), conf.Invitation)
+	jwtutil.Init("test123") // todo save me on the fisrt launch.
+	gormutil.Init(conf.Database, true)
+	gormutil.AutoMigrate(model.Tables())
+
+	apiRouter := ge.Group("/api")
+	ginutil.SetupResource(apiRouter,
+		server.NewConfigResource(),
+		server.NewTokenResource(conf.EmailAct()),
+		server.NewUserResource(conf.EmailAct(), conf.Invitation),
+	)
+
 	if conf.MoreuRoot != "" {
-		mu.SetupStatic(conf.MoreuRoot)
+		ge.Static("/moreu", conf.MoreuRoot)
 	} else {
-		mu.SetupEmbedStatic()
+		ge.StaticFS("/moreu", assets.EmbedFS())
 	}
 
-	ge.NoRoute(mu.NoRoute)
+	ge.NoRoute(func(c *gin.Context) {
+		if strings.HasPrefix(c.Request.URL.Path, "/moreu/") {
+			c.FileFromFS("/", assets.EmbedFS())
+			c.Abort()
+			return
+		}
+	})
 	ginutil.Startup(ge, ":8081")
 }

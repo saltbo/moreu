@@ -1,4 +1,4 @@
-package rest
+package server
 
 import (
 	"fmt"
@@ -8,8 +8,9 @@ import (
 	"github.com/saltbo/gopkg/gormutil"
 	_ "github.com/saltbo/gopkg/httputil"
 
+	"github.com/saltbo/moreu/api/bind"
+	"github.com/saltbo/moreu/internel/app/middleware"
 	"github.com/saltbo/moreu/model"
-	"github.com/saltbo/moreu/rest/bind"
 	"github.com/saltbo/moreu/service"
 )
 
@@ -33,7 +34,7 @@ func (rs *UserResource) Register(router *gin.RouterGroup) {
 	router.POST("/users", rs.create)        // 账户注册
 	router.PATCH("/users/:email", rs.patch) // 账户激活、密码重置
 
-	router.Use(LoginAuth())
+	router.Use(middleware.LoginAuth())
 	router.GET("/users", rs.findAll)        // 查询用户列表，需管理员权限
 	router.GET("/users/:username", rs.find) // 查询某一个用户的公开信息
 
@@ -107,7 +108,7 @@ func (rs *UserResource) find(c *gin.Context) {
 // @Failure 500 {object} httputil.JSONResponse
 // @Router /user [get]
 func (rs *UserResource) profile(c *gin.Context) {
-	user, err := service.UserGet(uxGet(c))
+	user, err := service.UserGet(middleware.UxGet(c))
 	if err != nil {
 		ginutil.JSONServerError(c, err)
 		return
@@ -143,7 +144,7 @@ func (rs *UserResource) update(c *gin.Context) {
 		return
 	}
 
-	user, err := service.UserGet(uxGet(c))
+	user, err := service.UserGet(middleware.UxGet(c))
 	if err != nil {
 		ginutil.JSONServerError(c, err)
 		return
