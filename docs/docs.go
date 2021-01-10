@@ -101,7 +101,8 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/bind.BodyConfig"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 ],
@@ -595,12 +596,6 @@ var doc = `{
         }
     },
     "definitions": {
-        "bind.BodyConfig": {
-            "type": "array",
-            "items": {
-                "$ref": "#/definitions/bind.config"
-            }
-        },
         "bind.BodyToken": {
             "type": "object",
             "required": [
@@ -665,17 +660,6 @@ var doc = `{
                 },
                 "offset": {
                     "type": "integer"
-                }
-            }
-        },
-        "bind.config": {
-            "type": "object",
-            "properties": {
-                "key": {
-                    "type": "string"
-                },
-                "value": {
-                    "type": "string"
                 }
             }
         },

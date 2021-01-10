@@ -86,7 +86,8 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/bind.BodyConfig"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 ],
@@ -580,12 +581,6 @@
         }
     },
     "definitions": {
-        "bind.BodyConfig": {
-            "type": "array",
-            "items": {
-                "$ref": "#/definitions/bind.config"
-            }
-        },
         "bind.BodyToken": {
             "type": "object",
             "required": [
@@ -650,17 +645,6 @@
                 },
                 "offset": {
                     "type": "integer"
-                }
-            }
-        },
-        "bind.config": {
-            "type": "object",
-            "properties": {
-                "key": {
-                    "type": "string"
-                },
-                "value": {
-                    "type": "string"
                 }
             }
         },

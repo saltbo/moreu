@@ -50,7 +50,7 @@ func (rs *ConfigResource) find(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param key path string true "键名"
-// @Param body body bind.BodyConfig true "参数"
+// @Param body body map[string]interface{} true "参数"
 // @Success 200 {object} httputil.JSONResponse
 // @Failure 400 {object} httputil.JSONResponse
 // @Failure 500 {object} httputil.JSONResponse

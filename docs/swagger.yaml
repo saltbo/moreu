@@ -1,9 +1,5 @@
 basePath: /api
 definitions:
-  bind.BodyConfig:
-    items:
-      $ref: '#/definitions/bind.config'
-    type: array
   bind.BodyToken:
     properties:
       captcha:
@@ -47,13 +43,6 @@ definitions:
         type: integer
       offset:
         type: integer
-    type: object
-  bind.config:
-    properties:
-      key:
-        type: string
-      value:
-        type: string
     type: object
   gin.H:
     additionalProperties: true
@@ -228,7 +217,8 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/bind.BodyConfig'
+          additionalProperties: true
+          type: object
       produces:
       - application/json
       responses:
