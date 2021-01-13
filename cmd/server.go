@@ -23,20 +23,18 @@ package cmd
 
 import (
 	"log"
-	"strings"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/gin-gonic/gin"
 	"github.com/saltbo/gopkg/ginutil"
-	"github.com/saltbo/gopkg/gormutil"
 	"github.com/saltbo/gopkg/jwtutil"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/saltbo/moreu/api/server"
-	"github.com/saltbo/moreu/assets"
+	"github.com/saltbo/moreu/api"
 	"github.com/saltbo/moreu/config"
 	"github.com/saltbo/moreu/model"
+	"github.com/saltbo/moreu/pkg/gormutil"
 )
 
 // serverCmd represents the middleware command
@@ -65,6 +63,11 @@ func serverRun() {
 	jwtutil.Init("test123") // todo save me on the fisrt launch.
 
 	conf := config.Parse()
+	if viper.ConfigFileUsed() != "" {
+		gormutil.Init(conf.Database, true)
+		gormutil.AutoMigrate(model.Tables())
+	}
+
 	viper.WatchConfig()
 	viper.OnConfigChange(func(in fsnotify.Event) {
 		log.Println(in, in.Name, in.String())
@@ -72,25 +75,6 @@ func serverRun() {
 		gormutil.AutoMigrate(model.Tables())
 	})
 
-	apiRouter := ge.Group("/api")
-	ginutil.SetupResource(apiRouter,
-		server.NewConfigResource(),
-		server.NewTokenResource(conf.EmailAct()),
-		server.NewUserResource(conf.EmailAct(), conf.Invitation),
-	)
-
-	if conf.MoreuRoot != "" {
-		ge.Static("/moreu", conf.MoreuRoot)
-	} else {
-		ge.StaticFS("/moreu", assets.EmbedFS())
-	}
-
-	ge.NoRoute(func(c *gin.Context) {
-		if strings.HasPrefix(c.Request.URL.Path, "/moreu/") {
-			c.FileFromFS("/", assets.EmbedFS())
-			c.Abort()
-			return
-		}
-	})
+	api.SetupServerRoutes(ge)
 	ginutil.Startup(ge, ":8081")
 }

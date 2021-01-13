@@ -14,7 +14,7 @@
         },
         "version": "1.0.0"
     },
-    "basePath": "/api",
+    "basePath": "/api/moreu",
     "paths": {
         "/configs/{key}": {
             "get": {

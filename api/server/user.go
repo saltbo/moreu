@@ -5,12 +5,12 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/saltbo/gopkg/ginutil"
-	"github.com/saltbo/gopkg/gormutil"
 	_ "github.com/saltbo/gopkg/httputil"
 
 	"github.com/saltbo/moreu/api/bind"
 	"github.com/saltbo/moreu/internel/app/middleware"
 	"github.com/saltbo/moreu/model"
+	"github.com/saltbo/moreu/pkg/gormutil"
 	"github.com/saltbo/moreu/service"
 )
 

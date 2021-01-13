@@ -827,7 +827,7 @@ type swaggerInfo struct {
 var SwaggerInfo = swaggerInfo{
 	Version:     "1.0.0",
 	Host:        "",
-	BasePath:    "/api",
+	BasePath:    "/api/moreu",
 	Schemes:     []string{},
 	Title:       "Moreu API",
 	Description: "This is a moreu server.",

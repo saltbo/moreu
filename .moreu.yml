@@ -12,3 +12,15 @@ moreuRoot: ../moreu-front/dist # 前端目录，如果定义则优先使用该�
 database:
   driver: mysql
   dsn: root:admin@(localhost:3306)/zpan?charset=utf8&parseTime=True&loc=Local
+
+routers:
+  - pattern: /moreu
+    upstream:
+      address: http://localhost:8081
+  - pattern: /api/moreu
+    upstream:
+      address: http://localhost:8081
+
+  - pattern: /
+    upstream:
+      address: http://localhost:8083

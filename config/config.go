@@ -1,11 +1,13 @@
 package config
 
 import (
+	"fmt"
 	"log"
 
-	"github.com/saltbo/gopkg/gormutil"
 	"github.com/saltbo/gopkg/mailutil"
 	"github.com/spf13/viper"
+
+	"github.com/saltbo/moreu/pkg/gormutil"
 )
 
 type (
@@ -46,5 +48,6 @@ func Parse() *Config {
 		log.Fatalln(err)
 	}
 
+	fmt.Print(conf)
 	return conf
 }

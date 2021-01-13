@@ -6,11 +6,11 @@ import (
 	"strings"
 
 	"github.com/jinzhu/gorm"
-	"github.com/saltbo/gopkg/gormutil"
 	"github.com/saltbo/gopkg/regexputil"
 	"github.com/saltbo/gopkg/strutil"
 
 	"github.com/saltbo/moreu/model"
+	"github.com/saltbo/moreu/pkg/gormutil"
 )
 
 type User struct {

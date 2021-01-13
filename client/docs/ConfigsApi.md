@@ -1,6 +1,6 @@
 # {{classname}}
 
-All URIs are relative to */api*
+All URIs are relative to */api/moreu*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------

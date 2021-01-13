@@ -1,4 +1,4 @@
-basePath: /api
+basePath: /api/moreu
 definitions:
   bind.BodyToken:
     properties:
