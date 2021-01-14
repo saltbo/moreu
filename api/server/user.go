@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/saltbo/gopkg/ginutil"
 	_ "github.com/saltbo/gopkg/httputil"
+	"github.com/saltbo/gopkg/strutil"
 
 	"github.com/saltbo/moreu/api/bind"
 	"github.com/saltbo/moreu/internel/app/middleware"
@@ -38,8 +39,9 @@ func (rs *UserResource) Register(router *gin.RouterGroup) {
 	router.GET("/users", rs.findAll)        // 查询用户列表，需管理员权限
 	router.GET("/users/:username", rs.find) // 查询某一个用户的公开信息
 
-	router.GET("/user", rs.profile) // 获取已登录用户的所有信息
-	router.PUT("/user", rs.update)  // 更新已登录用户个人信息
+	router.GET("/user", rs.profile)                 // 获取已登录用户的所有信息
+	router.PUT("/user/profile", rs.profileUpdate)   // 更新已登录用户个人信息
+	router.PUT("/user/password", rs.passwordUpdate) // 修改已登录用户密码
 }
 
 // findAll godoc
@@ -126,18 +128,18 @@ func (rs *UserResource) profile(c *gin.Context) {
 	})
 }
 
-// update godoc
+// profileUpdate godoc
 // @Tags Users
 // @Summary 修改个人信息
 // @Description 更新用户的个人信息
 // @Accept json
 // @Produce json
-// @Param username path string true "用户名"
+// @Param body body bind.BodyUserProfile true "参数"
 // @Success 200 {object} httputil.JSONResponse
 // @Failure 400 {object} httputil.JSONResponse
 // @Failure 500 {object} httputil.JSONResponse
-// @Router /users/{username} [put]
-func (rs *UserResource) update(c *gin.Context) {
+// @Router /user/profile [put]
+func (rs *UserResource) profileUpdate(c *gin.Context) {
 	p := new(bind.BodyUserProfile)
 	if err := c.ShouldBindJSON(p); err != nil {
 		ginutil.JSONBadRequest(c, err)
@@ -248,6 +250,42 @@ func (rs *UserResource) patch(c *gin.Context) {
 			ginutil.JSONServerError(c, err)
 			return
 		}
+	}
+
+	ginutil.JSON(c)
+}
+
+// passwordUpdate godoc
+// @Tags Users
+// @Summary 修改登录用户密码
+// @Description 修改登录用户密码
+// @Accept json
+// @Produce json
+// @Param body body bind.BodyUserPassword true "参数"
+// @Success 200 {object} httputil.JSONResponse
+// @Failure 400 {object} httputil.JSONResponse
+// @Failure 500 {object} httputil.JSONResponse
+// @Router /user/password [put]
+func (rs *UserResource) passwordUpdate(c *gin.Context) {
+	p := new(bind.BodyUserPassword)
+	if err := c.ShouldBindJSON(p); err != nil {
+		ginutil.JSONBadRequest(c, err)
+		return
+	}
+
+	user, err := service.UserGet(middleware.UxGet(c))
+	if err != nil {
+		ginutil.JSONServerError(c, err)
+		return
+	} else if user.Password != strutil.Md5Hex(p.OldPassword) {
+		ginutil.JSONBadRequest(c, fmt.Errorf("error password"))
+		return
+	}
+
+	user.Password = strutil.Md5Hex(p.NewPassword)
+	if err := gormutil.DB().Save(user).Error; err != nil {
+		ginutil.JSONServerError(c, err)
+		return
 	}
 
 	ginutil.JSON(c)

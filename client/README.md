@@ -28,11 +28,11 @@ Class | Method | HTTP request | Description
 *TokensApi* | [**TokensDelete**](docs/TokensApi.md#tokensdelete) | **Delete** /tokens | 退出登录
 *TokensApi* | [**TokensPost**](docs/TokensApi.md#tokenspost) | **Post** /tokens | 登录/密码重置
 *UsersApi* | [**UserGet**](docs/UsersApi.md#userget) | **Get** /user | 当前登录用户信息
+*UsersApi* | [**UserProfilePut**](docs/UsersApi.md#userprofileput) | **Put** /user/profile | 修改个人信息
 *UsersApi* | [**UsersEmailPatch**](docs/UsersApi.md#usersemailpatch) | **Patch** /users/{email} | 更新一项用户信息
 *UsersApi* | [**UsersGet**](docs/UsersApi.md#usersget) | **Get** /users | 用户列表
 *UsersApi* | [**UsersPost**](docs/UsersApi.md#userspost) | **Post** /users | 用户注册
 *UsersApi* | [**UsersUsernameGet**](docs/UsersApi.md#usersusernameget) | **Get** /users/{username} | 用户查询
-*UsersApi* | [**UsersUsernamePut**](docs/UsersApi.md#usersusernameput) | **Put** /users/{username} | 修改个人信息
 
 ## Documentation For Models
 
@@ -41,6 +41,7 @@ Class | Method | HTTP request | Description
  - [BindBodyToken](docs/BindBodyToken.md)
  - [BindBodyUser](docs/BindBodyUser.md)
  - [BindBodyUserPatch](docs/BindBodyUserPatch.md)
+ - [BindBodyUserProfile](docs/BindBodyUserProfile.md)
  - [BindQueryUser](docs/BindQueryUser.md)
  - [GinH](docs/GinH.md)
  - [HttputilJsonResponse](docs/HttputilJsonResponse.md)

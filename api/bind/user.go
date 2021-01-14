@@ -25,3 +25,8 @@ type BodyUserProfile struct {
 	Company  string `json:"company"`
 	Location string `json:"location"`
 }
+
+type BodyUserPassword struct {
+	OldPassword string `json:"old_password" binding:"required"`
+	NewPassword string `json:"new_password" binding:"required"`
+}

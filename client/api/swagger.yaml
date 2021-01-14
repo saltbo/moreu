@@ -212,6 +212,39 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/httputil.JSONResponse'
+  /user/profile:
+    put:
+      tags:
+      - Users
+      summary: 修改个人信息
+      description: 更新用户的个人信息
+      requestBody:
+        description: 参数
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bind.BodyUserProfile'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/httputil.JSONResponse'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/httputil.JSONResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/httputil.JSONResponse'
+      x-codegen-request-body-name: body
   /users:
     get:
       tags:
@@ -367,39 +400,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/httputil.JSONResponse'
-    put:
-      tags:
-      - Users
-      summary: 修改个人信息
-      description: 更新用户的个人信息
-      parameters:
-      - name: username
-        in: path
-        description: 用户名
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/httputil.JSONResponse'
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/httputil.JSONResponse'
-        "500":
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/httputil.JSONResponse'
 components:
   schemas:
     bind.BodyToken:
@@ -436,6 +436,21 @@ components:
         password:
           type: string
         token:
+          type: string
+    bind.BodyUserProfile:
+      type: object
+      properties:
+        avatar:
+          type: string
+        bio:
+          type: string
+        company:
+          type: string
+        location:
+          type: string
+        nickname:
+          type: string
+        url:
           type: string
     bind.QueryUser:
       type: object

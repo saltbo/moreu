@@ -5,11 +5,11 @@ All URIs are relative to */api/moreu*
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**UserGet**](UsersApi.md#UserGet) | **Get** /user | 当前登录用户信息
+[**UserProfilePut**](UsersApi.md#UserProfilePut) | **Put** /user/profile | 修改个人信息
 [**UsersEmailPatch**](UsersApi.md#UsersEmailPatch) | **Patch** /users/{email} | 更新一项用户信息
 [**UsersGet**](UsersApi.md#UsersGet) | **Get** /users | 用户列表
 [**UsersPost**](UsersApi.md#UsersPost) | **Post** /users | 用户注册
 [**UsersUsernameGet**](UsersApi.md#UsersUsernameGet) | **Get** /users/{username} | 用户查询
-[**UsersUsernamePut**](UsersApi.md#UsersUsernamePut) | **Put** /users/{username} | 修改个人信息
 
 # **UserGet**
 > InlineResponse200 UserGet(ctx, username)
@@ -35,6 +35,34 @@ No authorization required
 ### HTTP request headers
 
  - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **UserProfilePut**
+> HttputilJsonResponse UserProfilePut(ctx, body)
+修改个人信息
+
+更新用户的个人信息
+
+### Required Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **body** | [**BindBodyUserProfile**](BindBodyUserProfile.md)| 参数 | 
+
+### Return type
+
+[**HttputilJsonResponse**](httputil.JSONResponse.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
@@ -148,34 +176,6 @@ Name | Type | Description  | Notes
 ### Return type
 
 [**InlineResponse2003**](inline_response_200_3.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **UsersUsernamePut**
-> HttputilJsonResponse UsersUsernamePut(ctx, username)
-修改个人信息
-
-更新用户的个人信息
-
-### Required Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **username** | **string**| 用户名 | 
-
-### Return type
-
-[**HttputilJsonResponse**](httputil.JSONResponse.md)
 
 ### Authorization
 
