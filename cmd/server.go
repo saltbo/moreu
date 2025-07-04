@@ -23,18 +23,11 @@ package cmd
 
 import (
 	"log"
+	"net/http"
 
-	"github.com/fsnotify/fsnotify"
-	"github.com/gin-gonic/gin"
-	"github.com/saltbo/gopkg/ginutil"
-	"github.com/saltbo/gopkg/jwtutil"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 
 	"github.com/saltbo/moreu/api"
-	"github.com/saltbo/moreu/config"
-	"github.com/saltbo/moreu/model"
-	"github.com/saltbo/moreu/pkg/gormutil"
 )
 
 // serverCmd represents the middleware command
@@ -57,24 +50,9 @@ func init() {
 }
 
 func serverRun() {
-	ge := gin.Default()
-	ginutil.SetupPing(ge)
-	ginutil.SetupSwagger(ge)
-	jwtutil.Init("test123") // todo save me on the fisrt launch.
-
-	conf := config.Parse()
-	if viper.ConfigFileUsed() != "" {
-		gormutil.Init(conf.Database, true)
-		gormutil.AutoMigrate(model.Tables())
-	}
-
-	viper.WatchConfig()
-	viper.OnConfigChange(func(in fsnotify.Event) {
-		log.Println(in, in.Name, in.String())
-		gormutil.Init(conf.Database, true)
-		gormutil.AutoMigrate(model.Tables())
-	})
-
-	api.SetupServerRoutes(ge)
-	ginutil.Startup(ge, ":8081")
+	//ws := new(restful.WebService)
+	//ws.Route(ws.GET("/hello").To(hello))
+	//restful.Add(ws)
+	api.RegisterHandlers()
+	log.Fatal(http.ListenAndServe(":3080", nil))
 }

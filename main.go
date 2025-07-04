@@ -17,7 +17,6 @@ package main
 
 import (
 	"github.com/saltbo/moreu/cmd"
-	_ "github.com/saltbo/moreu/docs"
 )
 
 // @title Moreu API
